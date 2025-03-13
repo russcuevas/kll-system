@@ -17,49 +17,51 @@
     margin: 0;
 }
 
-.wizard ul > li, .tabcontrol ul > li {
+.wizard ul>li,
+.tabcontrol ul>li {
     display: block;
     padding: 0;
 }
+
 /* Accessibility */
-.wizard > .steps .current-info,
-.tabcontrol > .steps .current-info,
-.wizard > .content > .title,
-.tabcontrol > .content > .title {
+.wizard>.steps .current-info,
+.tabcontrol>.steps .current-info,
+.wizard>.content>.title,
+.tabcontrol>.content>.title {
     position: absolute;
     left: -999em;
 }
 
 .wizard {
-    > .steps {
+    >.steps {
         position: relative;
         display: block;
         width: 100%;
     }
 
     &.vertical {
-        > .steps {
+        >.steps {
             float: left;
             width: 30%;
         }
 
-        > .steps > ul > li {
+        >.steps>ul>li {
             float: none;
             width: 100%;
         }
 
-        > .content {
+        >.content {
             float: left;
             margin: 0 0 0.5em 0;
             width: 70%;
         }
 
-        > .actions {
+        >.actions {
             float: right;
             width: 100%;
         }
 
-        > .actions > ul > li {
+        >.actions>ul>li {
             margin: 0 0 0 1em;
         }
     }
@@ -70,13 +72,13 @@
                 font-size: 1.429em;
             }
 
-            > ul > li {
+            >ul>li {
                 width: 25%;
                 float: left;
             }
         }
 
-        .actions > ul > li {
+        .actions>ul>li {
             float: left;
         }
     }
@@ -93,7 +95,8 @@
                 -moz-border-radius: 5px;
                 border-radius: 5px;
 
-                &:hover, &:active {
+                &:hover,
+                &:active {
                     display: block;
                     width: auto;
                     margin: 0 0.5em 0.5em;
@@ -110,7 +113,8 @@
                 color: #aaa;
                 cursor: default;
 
-                &:hover, &:active {
+                &:hover,
+                &:active {
                     background: #eee;
                     color: #aaa;
                     cursor: default;
@@ -122,7 +126,8 @@
                 color: #fff;
                 cursor: default;
 
-                &:hover, &:active {
+                &:hover,
+                &:active {
                     background: #2184be;
                     color: #fff;
                     cursor: default;
@@ -133,7 +138,8 @@
                 background: #9dc8e2;
                 color: #fff;
 
-                &:hover, &:active {
+                &:hover,
+                &:active {
                     background: #9dc8e2;
                     color: #fff;
                 }
@@ -143,7 +149,8 @@
                 background: #ff3111;
                 color: #fff;
 
-                &:hover, &:active {
+                &:hover,
+                &:active {
                     background: #ff3111;
                     color: #fff;
                 }
@@ -170,11 +177,11 @@
         }
     }
 
-    > .actions > ul {
+    >.actions>ul {
         display: inline-block;
         text-align: right;
 
-        > li {
+        >li {
             margin: 0 0.5em;
         }
     }
@@ -189,7 +196,8 @@
                 text-decoration: none;
                 @include border-radius(0);
 
-                &:hover, &:active {
+                &:hover,
+                &:active {
                     background: #009688;
                     color: #fff;
                     display: block;
@@ -203,7 +211,8 @@
                 background: #eee;
                 color: #aaa;
 
-                &:hover, &:active {
+                &:hover,
+                &:active {
                     background: #eee;
                     color: #aaa;
                 }
@@ -212,19 +221,19 @@
     }
 }
 
-.tabcontrol > {
+.tabcontrol> {
     .steps {
         position: relative;
         display: block;
         width: 100%;
 
-        > ul {
+        >ul {
             position: relative;
             margin: 6px 0 0 0;
             top: 1px;
             z-index: 1;
 
-            > li {
+            >li {
                 float: left;
                 margin: 5px 2px 0 0;
                 padding: 1px;
@@ -248,12 +257,12 @@
                     padding: 0 0 1px 0;
                     margin-top: 0;
 
-                    > a {
+                    >a {
                         padding: 15px 30px 10px 30px;
                     }
                 }
 
-                > a {
+                >a {
                     color: #5f5f5f;
                     display: inline-block;
                     border: 0 none;
@@ -278,7 +287,7 @@
         border-top: 1px solid #bbb;
         padding-top: 20px;
 
-        > .body {
+        >.body {
             float: left;
             position: absolute;
             width: 95%;
@@ -288,7 +297,7 @@
             ul {
                 list-style: disc !important;
 
-                > li {
+                >li {
                     display: list-item;
                 }
             }
@@ -334,7 +343,7 @@
 
         .error {
             a {
-                background-color: #F44336 !important;
+                background-color: #7D0A0A !important;
             }
         }
 

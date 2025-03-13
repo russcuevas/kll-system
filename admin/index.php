@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>Dashboard</title>
+    <title>Admin Panel</title>
     <!-- Favicon-->
     <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
     <!-- Google Fonts -->
@@ -67,7 +67,7 @@
                 <a href="javascript:void(0);" class="bars"></a>
                 <a id="app-title" style="display:flex;align-items:center" class="navbar-brand" href="index.php">
                     <img id="bcas-logo" style="width:45px;display:inline;margin-right:10px;" src="images/dashboard/kll-logo.jpg" />
-                    KLL-Assistments
+                    KLL Course-Path
                 </a>
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -162,156 +162,11 @@
     <!-- #Top Bar -->
     <section>
         <!-- Left Sidebar -->
-        <aside id="leftsidebar" class="sidebar">
-            <!-- User Info -->
-            <!-- <div class="user-info">
-                <div class="image">
-                    <img src="images/user.png" width="48" height="48" alt="User" />
-                </div>
-                <div class="info-container">
-                    <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">John Doe</div>
-                    <div class="email">john.doe@example.com</div>
-                    <div class="btn-group user-helper-dropdown">
-                        <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
-                        <ul class="dropdown-menu pull-right">
-                            <li><a href="javascript:void(0);"><i class="material-icons">person</i>Profile</a></li>
-                            <li role="seperator" class="divider"></li>
-                            <li><a href="javascript:void(0);"><i class="material-icons">group</i>Followers</a></li>
-                            <li><a href="javascript:void(0);"><i class="material-icons">shopping_cart</i>Sales</a></li>
-                            <li><a href="javascript:void(0);"><i class="material-icons">favorite</i>Likes</a></li>
-                            <li role="seperator" class="divider"></li>
-                            <li><a href="javascript:void(0);"><i class="material-icons">input</i>Sign Out</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div> -->
-            <!-- #User Info -->
-            <!-- Menu -->
-            <div class="menu">
-                <ul class="list">
-                    <li class="header" style="font-size:14px !important; color: #333 !important;">Welcome <br> <label style="font-weight:700; color: #7D0A0A;">Russel Vincent Cardi&#241;o Cuevas</label></li>
-                    <li class="active">
-                        <a href="index.php">
-                            <i class="material-icons">home</i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="pages/typography.html">
-                            <i class="material-icons">admin_panel_settings</i>
-                            <span>Admin</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0);" class="menu-toggle">
-                            <i class="material-icons">groups</i>
-                            <span>Examinees</span>
-                        </a>
-                        <ul class="ml-menu">
-                            <li>
-                                <a href="pages/ui/alerts.html">Add Examiners</a>
-                            </li>
-                            <li>
-                                <a href="pages/ui/animations.html">Examinees List</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0);" class="menu-toggle">
-                            <i class="material-icons">description</i>
-                            <span>Assesstment</span>
-                        </a>
-                        <ul class="ml-menu">
-                            <li>
-                                <a href="pages/ui/alerts.html">Course</a>
-                            </li>
-                            <li>
-                                <a href="pages/ui/animations.html">Questionnaire</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="pages/typography.html">
-                            <i class="material-icons">done_all</i>
-                            <span>Exam Results</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <!-- #Menu -->
-            <!-- Footer -->
-            <div class="legal">
-                <!-- <div class="copyright">
-                    &copy; 2016 - 2017 <a href="javascript:void(0);">AdminBSB - Material Design</a>.
-                </div>
-                <div class="version">
-                    <b>Version: </b> 1.0.5
-                </div> -->
-            </div>
-            <!-- #Footer -->
-        </aside>
+        <?php include 'components/left_sidebar.php' ?>
         <!-- #END# Left Sidebar -->
         <!-- Right Sidebar -->
-        <aside id="rightsidebar" class="right-sidebar">
-            <ul class="nav nav-tabs tab-nav-right" role="tablist">
-                <li role="presentation" class="active"><a href="#account" data-toggle="tab">ACCOUNT</a></li>
-            </ul>
-            <div class="tab-content">
-                <div role="tabpanel" class="tab-pane fade in active in active" id="account">
-                    <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 548px;">
-                        <ul class="account-settings" style="overflow: hidden; width: auto; height: 548px;">
-                            <li style="display: flex; align-items: center;" data-toggle="modal" data-target="#changePassModal">
-                                <div>
-                                    <label class="mb-0 hov-pointer">
-                                        <i class="material-icons mr-2" style="font-size: 18px; vertical-align: middle;">lock</i> Change Password
-                                    </label>
-                                </div>
-                            </li>
-
-                            <li onclick="Logout()" style="display: flex; align-items: center;">
-                                <div>
-                                    <label class=" mb-0 hov-pointer">
-                                        <i class="material-icons mr-2" style="font-size:18px; vertical-align: middle;">exit_to_app</i>
-                                        Log Out
-                                    </label>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </aside>
+        <?php include 'components/right_sidebar.php' ?>
         <!-- #END# Right Sidebar -->
-
-        <div class="modal fade" id="changePassModal" tabindex="-1" role="dialog" style="display: none;">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="defaultModalLabel">Change Password</h4>
-                    </div>
-                    <div class="modal-body">
-                        <form id="form_advanced_validation" style="margin-top:10px;" method="POST">
-                            <div class="form-group form-float">
-                                <div class="form-line">
-                                    <input type="text" class="form-control" name="new_password" maxlength="10" minlength="3" required>
-                                    <label class="form-label">New Password</label>
-                                </div>
-                            </div>
-                            <div class="form-group form-float">
-                                <div class="form-line">
-                                    <input type="text" class="form-control" name="confirm_password" maxlength="10" minlength="3" required>
-                                    <label class="form-label">Confirm Password</label>
-                                </div>
-                            </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn bg-teal waves-effect" type="submit">SAVE</button>
-                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">CLOSE</button>
-                    </div>
-                    </form>
-                </div>
-            </div>
-        </div>
     </section>
 
     <section class="content">
@@ -528,46 +383,35 @@
 
     <!-- Jquery Core Js -->
     <script src="plugins/jquery/jquery.min.js"></script>
-
-    <!-- Bootstrap Core Js -->
-    <script src="plugins/bootstrap/js/bootstrap.js"></script>
-
-    <!-- Select Plugin Js -->
-    <script src="plugins/bootstrap-select/js/bootstrap-select.js"></script>
-
-    <!-- Slimscroll Plugin Js -->
-    <script src="plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
-
     <!-- Jquery Validation Plugin Css -->
     <script src="plugins/jquery-validation/jquery.validate.js"></script>
-
+    <script src="js/pages/forms/form-validation.js"></script>
+    <!-- Bootstrap Core Js -->
+    <script src="plugins/bootstrap/js/bootstrap.js"></script>
+    <!-- Select Plugin Js -->
+    <script src="plugins/bootstrap-select/js/bootstrap-select.js"></script>
+    <!-- Slimscroll Plugin Js -->
+    <script src="plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
     <!-- Waves Effect Plugin Js -->
     <script src="plugins/node-waves/waves.js"></script>
-
     <!-- Jquery CountTo Plugin Js -->
     <script src="plugins/jquery-countto/jquery.countTo.js"></script>
-
     <!-- Morris Plugin Js -->
     <script src="plugins/raphael/raphael.min.js"></script>
     <script src="plugins/morrisjs/morris.js"></script>
-
     <!-- ChartJs -->
     <script src="plugins/chartjs/Chart.bundle.js"></script>
-
     <!-- Flot Charts Plugin Js -->
     <script src="plugins/flot-charts/jquery.flot.js"></script>
     <script src="plugins/flot-charts/jquery.flot.resize.js"></script>
     <script src="plugins/flot-charts/jquery.flot.pie.js"></script>
     <script src="plugins/flot-charts/jquery.flot.categories.js"></script>
     <script src="plugins/flot-charts/jquery.flot.time.js"></script>
-
     <!-- Sparkline Chart Plugin Js -->
     <script src="plugins/jquery-sparkline/jquery.sparkline.js"></script>
-
     <!-- Jquery DataTable Plugin Js -->
     <script src="plugins/jquery-datatable/jquery.dataTables.js"></script>
     <script src="plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
-
     <script>
         $(function() {
             $('.js-basic-example').DataTable({
@@ -706,7 +550,6 @@
     <!-- Custom Js -->
     <script src="js/admin.js"></script>
     <script src="js/pages/index.js"></script>
-    <script src="js/pages/forms/form-validation.js"></script>
 
     <!-- Demo Js -->
     <script src="js/demo.js"></script>

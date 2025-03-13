@@ -1,5 +1,5 @@
 ﻿.theme-red .navbar {
-  background-color: #F44336;
+  background-color: #7D0A0A;
 }
 
 .theme-red .navbar-brand {
@@ -52,7 +52,7 @@
 
 .theme-red .sidebar .menu .list li.active> :first-child i,
 .theme-red .sidebar .menu .list li.active> :first-child span {
-  color: #F44336;
+  color: #7D0A0A;
 }
 
 .theme-red .sidebar .menu .list .toggled {
@@ -68,7 +68,7 @@
 }
 
 .theme-red .sidebar .legal .copyright a {
-  color: #F44336 !important;
+  color: #7D0A0A !important;
 }
 
 .theme-pink .navbar {

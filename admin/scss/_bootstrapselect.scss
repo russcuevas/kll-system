@@ -4,6 +4,7 @@
     @include border-radius(0);
 
     .dropdown-toggle {
+
         &:focus,
         &:active {
             outline: none !important;
@@ -57,7 +58,7 @@
         }
 
         .notify {
-            background-color: #F44336 !important;
+            background-color: #7D0A0A !important;
             color: #fff !important;
             border: none !important;
         }
