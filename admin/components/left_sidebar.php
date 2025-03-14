@@ -45,7 +45,7 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="pages/typography.html">
+                        <a href="exam_results.php">
                             <i class="material-icons">done_all</i>
                             <span>Exam Results</span>
                         </a>
