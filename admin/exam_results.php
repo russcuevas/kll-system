@@ -231,7 +231,7 @@
                                             <td>March 13, 2025</td>
                                             <td>March 13, 2025</td>
                                             <td>
-                                                <a href="" class="btn btn-danger">View Results</a>
+                                                <a href="" class="btn btn-warning">View Results</a>
                                             </td>
                                         </tr>
                                     </tbody>
