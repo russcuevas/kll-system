@@ -26,7 +26,7 @@
                                 <a href="add_examiners.php">Add Examiners</a>
                             </li>
                             <li>
-                                <a href="pages/ui/animations.html">Examinees List</a>
+                                <a href="examinees_list.php">Examinees List</a>
                             </li>
                         </ul>
                     </li>
@@ -37,10 +37,10 @@
                         </a>
                         <ul class="ml-menu">
                             <li>
-                                <a href="pages/ui/alerts.html">Course</a>
+                                <a href="course.php">Course</a>
                             </li>
                             <li>
-                                <a href="pages/ui/animations.html">Questionnaire</a>
+                                <a href="questionnaire.php">Questionnaire</a>
                             </li>
                         </ul>
                     </li>

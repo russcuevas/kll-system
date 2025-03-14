@@ -13,8 +13,6 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
     <!-- Bootstrap Core Css -->
     <link href="plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <!-- Bootstrap Select Css -->
-    <link href="plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet">
     <!-- Waves Effect Css -->
     <link href="plugins/node-waves/waves.css" rel="stylesheet" />
     <!-- Animation Css -->
@@ -34,6 +32,25 @@
 
         body {
             font-family: 'Poppins', sans-serif !important;
+        }
+
+        .select-form {
+            display: block !important;
+            width: 100% !important;
+            height: 34px !important;
+            padding: 6px 12px !important;
+            font-size: 14px !important;
+            line-height: 1.42857143 !important;
+            color: #555 !important;
+            background-color: #fff !important;
+            background-image: none !important;
+            border: 1px solid #ccc !important;
+            border-radius: 4px !important;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075) !important;
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075) !important;
+            -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s !important;
+            -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s !important;
+            transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s !important;
         }
     </style>
 </head>
@@ -240,7 +257,7 @@
                                     <label for="year-select-gender"
                                         style="font-weight: 600; margin-right: 10px;">Year:</label>
                                     <div class="form-line" style="width: 100px">
-                                        <select class="form-control show-tick" id="year-select-gender"
+                                        <select class="select-form" id="year-select-gender"
                                             style="border: none; box-shadow: none;">
                                             <option value="2025">2025</option>
                                             <option value="2026">2026</option>
@@ -295,11 +312,11 @@
                                                 </tr>
                                                 <tr>
                                                     <td>3</td>
-                                                    <td>Bachelor of Science in Education</td>
+                                                    <td>Bachelor of Science in Criminology</td>
                                                 </tr>
                                                 <tr>
                                                     <td>4</td>
-                                                    <td>Bachelor of Science in Basic Education</td>
+                                                    <td>Bachelor of Science in Education</td>
                                                 </tr>
                                                 <tr>
                                                     <td>5</td>
@@ -388,8 +405,6 @@
     <script src="js/pages/forms/form-validation.js"></script>
     <!-- Bootstrap Core Js -->
     <script src="plugins/bootstrap/js/bootstrap.js"></script>
-    <!-- Select Plugin Js -->
-    <script src="plugins/bootstrap-select/js/bootstrap-select.js"></script>
     <!-- Slimscroll Plugin Js -->
     <script src="plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
     <!-- Waves Effect Plugin Js -->
