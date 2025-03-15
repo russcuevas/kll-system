@@ -18,7 +18,7 @@
     <link href="assets/css/custom.css" rel="stylesheet">
     <!-- FAVICON -->
     <link rel="shortcut icon" href="assets/images/kll-logo.jpg" type="image/x-icon">
-    <title>KLL - Assestments</title>
+    <title>KLL - Assesstments</title>
     <style>
         .info-container {
             display: flex;

@@ -535,7 +535,7 @@
         var preferredCourseChart = new Chart(ctx, {
             type: 'pie', // Pie chart type
             data: {
-                labels: ['Course A', 'Course B', 'Course C'], // Names of top 3 courses
+                labels: ['Bachelor of Science in Computer Science', 'Bachelor of Science in Criminology', 'Bachelor of Science in Business Administration'], // Names of top 3 courses
                 datasets: [{
                     label: 'Top Preferred Courses',
                     data: [30, 40, 30], // Data for each course (adjust the values as necessary)

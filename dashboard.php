@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>Admin Panel</title>
+    <title>Student Dashboard</title>
     <!-- Favicon-->
     <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
     <!-- Google Fonts -->
@@ -26,6 +26,8 @@
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="admin/css/themes/all-themes.css" rel="stylesheet" />
     <link rel="stylesheet" href="admin/css/custom.css">
+    <!-- FAVICON -->
+    <link rel="shortcut icon" href="assets/images/kll-logo.jpg" type="image/x-icon">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
@@ -96,7 +98,7 @@
                 <ul class="list">
                     <li class="header" style="font-size:14px !important; color: #333 !important;">Welcome <br> <label style="font-weight:700; color: #7D0A0A;">Mark Angelo Baclayo</label></li>
                     <li class="active">
-                        <a href="index.php">
+                        <a href="dashboard.php">
                             <i class="material-icons">home</i>
                             <span>Dashboard</span>
                         </a>
@@ -154,7 +156,7 @@
                         <h4 class="modal-title" id="defaultModalLabel">Change Password</h4>
                     </div>
                     <div class="modal-body">
-                        <form id="form_advanced_validation" style="margin-top:10px;" method="POST">
+                        <form action="" id="form_advanced_validation" style="margin-top:10px;" method="POST">
                             <div class="form-group form-float">
                                 <div class="form-line">
                                     <input type="text" class="form-control" name="new_password" maxlength="10" minlength="3" required>

@@ -214,6 +214,7 @@
                                             <td>March 13, 2025</td>
                                             <td>March 13, 2025</td>
                                             <td>
+                                                <a href="" class="btn btn-warning">Update</a>
                                                 <a href="" class="btn btn-danger">Delete</a>
                                             </td>
                                         </tr>
@@ -228,6 +229,7 @@
                                             <td>March 13, 2025</td>
                                             <td>March 13, 2025</td>
                                             <td>
+                                                <a href="" class="btn btn-warning">Update</a>
                                                 <a href="" class="btn btn-danger">Delete</a>
                                             </td>
                                         </tr>
@@ -243,6 +245,7 @@
                                             <td>March 13, 2025</td>
                                             <td>March 13, 2025</td>
                                             <td>
+                                                <a href="" class="btn btn-warning">Update</a>
                                                 <a href="" class="btn btn-danger">Delete</a>
                                             </td>
                                         </tr>
@@ -257,6 +260,7 @@
                                             <td>March 13, 2025</td>
                                             <td>March 13, 2025</td>
                                             <td>
+                                                <a href="" class="btn btn-warning">Update</a>
                                                 <a href="" class="btn btn-danger">Delete</a>
                                             </td>
                                         </tr>
@@ -272,6 +276,7 @@
                                             <td>March 13, 2025</td>
                                             <td>March 13, 2025</td>
                                             <td>
+                                                <a href="" class="btn btn-warning">Update</a>
                                                 <a href="" class="btn btn-danger">Delete</a>
                                             </td>
                                         </tr>
@@ -287,6 +292,7 @@
                                             <td>March 13, 2025</td>
                                             <td>March 13, 2025</td>
                                             <td>
+                                                <a href="" class="btn btn-warning">Update</a>
                                                 <a href="" class="btn btn-danger">Delete</a>
                                             </td>
                                         </tr>
@@ -301,6 +307,7 @@
                                             <td>March 13, 2025</td>
                                             <td>March 13, 2025</td>
                                             <td>
+                                                <a href="" class="btn btn-warning">Update</a>
                                                 <a href="" class="btn btn-danger">Delete</a>
                                             </td>
                                         </tr>
@@ -315,6 +322,7 @@
                                             <td>March 13, 2025</td>
                                             <td>March 13, 2025</td>
                                             <td>
+                                                <a href="" class="btn btn-warning">Update</a>
                                                 <a href="" class="btn btn-danger">Delete</a>
                                             </td>
                                         </tr>
@@ -330,6 +338,7 @@
                                             <td>March 13, 2025</td>
                                             <td>March 13, 2025</td>
                                             <td>
+                                                <a href="" class="btn btn-warning">Update</a>
                                                 <a href="" class="btn btn-danger">Delete</a>
                                             </td>
                                         </tr>
@@ -345,6 +354,7 @@
                                             <td>March 13, 2025</td>
                                             <td>March 13, 2025</td>
                                             <td>
+                                                <a href="" class="btn btn-warning">Update</a>
                                                 <a href="" class="btn btn-danger">Delete</a>
                                             </td>
                                         </tr>
