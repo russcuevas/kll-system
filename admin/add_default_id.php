@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
     <!-- Bootstrap Core Css -->
     <link href="plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap Select Css -->
+    <link href="plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet">
     <!-- Waves Effect Css -->
     <link href="plugins/node-waves/waves.css" rel="stylesheet" />
     <!-- Animation Css -->
@@ -30,65 +32,6 @@
 
         body {
             font-family: 'Poppins', sans-serif !important;
-        }
-
-        .select-form {
-            display: block !important;
-            width: 100% !important;
-            height: 34px !important;
-            padding: 6px 12px !important;
-            font-size: 14px !important;
-            line-height: 1.42857143 !important;
-            color: #555 !important;
-            background-color: #fff !important;
-            background-image: none !important;
-            border: 1px solid #ccc !important;
-            border-radius: 4px !important;
-            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075) !important;
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075) !important;
-            -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s !important;
-            -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s !important;
-            transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s !important;
-        }
-
-        @media only screen and (max-width: 600px) {
-            .btn {
-                font-size: 9px !important;
-                height: 27px;
-                padding-top: 0 !important;
-                padding-bottom: 0 !important;
-            }
-
-
-            .btn .material-icons {
-                font-size: 14px !important;
-                top: 2px;
-            }
-
-            .filter-button {
-                margin: 0 auto 20px;
-                height: 34px;
-                display: block;
-            }
-
-
-        }
-
-        @media (min-width: 992px) {
-
-            .select-form-lg {
-                margin-left: -20px !important;
-            }
-
-            .filter-button {
-                margin: 0 auto 20px;
-                height: 33px;
-                margin-left: -40px !important;
-            }
-        }
-
-        .table-responsive {
-            border: none !important;
         }
     </style>
 </head>
@@ -159,11 +102,7 @@
                 <ol style="font-size: 15px;" class="breadcrumb breadcrumb-col-red">
                     <li><a href="index.php"><i style="font-size: 20px;" class="material-icons">home</i>
                             Dashboard</a></li>
-                    <li class="active"><i style="font-size: 20px;" class="material-icons">groups</i>
-                        Examinees
-                    </li>
-                    <li class="active"><i style="font-size: 20px;" class="material-icons">badge</i>
-                        Examinees List
+                    <li class="active"><i style="font-size: 20px;" class="material-icons">add</i> Add Examiners
                     </li>
                 </ol>
             </div>
@@ -173,85 +112,77 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
                         <div class="header">
-                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                                <h2 class="m-0" style="font-size: 25px; font-weight: 900; color: #7D0A0A;">
-                                    List of Examinees
-                                </h2>
-                                <div id="print-container">
-                                    <form id="printExamineesForm" style="display:inline;">
-                                        <button type="submit" class="btn bg-red waves-effect btn-sm">
-                                            <i class="material-icons">print</i>
-                                            <span>Download for Print</span>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
+                            <h2 style="font-size: 25px; font-weight: 900; color: #7D0A0A;">
+                                Add Examiners
+                            </h2>
                         </div>
                         <div class="body">
-                            <div class="row mb-3">
-                                <div class="form-group">
-                                    <form action="" method="GET">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="col-lg-2 col-md-4 col-sm-12 col-xs-12">
-                                                <select class="form-control select-form" id="month" name="month">
-                                                    <option value="">All months</option>
-                                                </select>
+                            <form id="add_default_id_validation" method="POST">
+                                <div class="form-group form-float" style="margin-top: 20px !important;">
+                                    <div class="form-line">
+                                        <input type="text" class="form-control" name="default_id" style="background-color: gray;" placeholder="091238774" required readonly>
+                                        <label class="form-label">Examiners ID</label>
+                                    </div>
+                                </div>
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="text" class="form-control" name="fullname" required>
+                                        <label class="form-label">Fullname</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="email" class="form-control" name="email" required>
+                                        <label class="form-label">Email</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group form-float">
+                                    <div>
+                                        <label class="form-label">Sex</label>
+                                        <div style="display:flex;">
+                                            <div>
+                                                <input name="gender" val="male" type="radio" id="male" checked />
+                                                <label class="radio" for="male">Male</label>
                                             </div>
-                                            <div class="col-lg-2 col-md-4 col-sm-12 col-xs-12">
-                                                <select class="form-control select-form select-form-lg" id="year" name="year">
-                                                    <option value="">All years</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <button type="submit" class="btn bg-red waves-effect btn-sm filter-button">
-                                                    <i class="material-icons">filter_list</i> <span class="filter-span">FILTER</span>
-                                                </button>
+                                            <div>
+                                                <input name="gender" val="male" type="radio" id="female" />
+                                                <label class="radio" for="female">Female</label>
                                             </div>
                                         </div>
-                                    </form>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div id="printable-area" class="table-responsive mt-3">
-                                <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Fullname</th>
-                                            <th>Sex</th>
-                                            <th>Age</th>
-                                            <th>Birthday</th>
-                                            <th>Strand</th>
-                                            <th>Preferred Course</th>
-                                            <th>Created</th>
-                                            <th>Updated</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>2420580</td>
-                                            <td>Mark Angelo Baclayo</td>
-                                            <td>Male</td>
-                                            <td>21</td>
-                                            <td>03/13/2000</td>
-                                            <td>HUMSS</td>
-                                            <td>1.) Bachelor of Science in Computer Science <br>
-                                                2.) Bachelor of Science in Nursing <br>
-                                                3.) Bachelor of Science in Criminology <br>
-                                            </td>
-                                            <td>March 13, 2025</td>
-                                            <td>March 13, 2025</td>
-                                            <td>
-                                                <a href="" class="btn btn-danger">Delete</a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="number" class="form-control" name="age" required>
+                                        <label class="form-label">Age</label>
+                                    </div>
+                                </div>
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="date" class="form-control" name="birthday" required>
+                                        <label class="form-label">Birthday</label>
+                                    </div>
+                                </div>
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <select id="strand" name="strand" required class="form-control">
+                                            <option value="HUMSS">HUMSS</option>
+                                            <option value="ABM">ABM</option>
+                                            <option value="STEM">STEM</option>
+                                        </select>
+                                        <label class="form-label">Strand</label>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary waves-effect" type="submit">SUBMIT</button>
+                            </form>
                         </div>
                     </div>
                 </div>
+            </div>
+            <!-- #END# Advanced Validation -->
 
 
     </section>
@@ -263,6 +194,8 @@
     <script src="js/pages/forms/form-validation.js"></script>
     <!-- Bootstrap Core Js -->
     <script src="plugins/bootstrap/js/bootstrap.js"></script>
+    <!-- Select Plugin Js -->
+    <script src="plugins/bootstrap-select/js/bootstrap-select.js"></script>
     <!-- Slimscroll Plugin Js -->
     <script src="plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
     <!-- Waves Effect Plugin Js -->
@@ -313,6 +246,66 @@
         });
     </script>
 
+    <script>
+        $(function() {
+            $('#form_validation').validate({
+                rules: {
+                    'checkbox': {
+                        required: true
+                    },
+                    'gender': {
+                        required: true
+                    }
+                },
+                highlight: function(input) {
+                    $(input).parents('.form-line').addClass('error');
+                },
+                unhighlight: function(input) {
+                    $(input).parents('.form-line').removeClass('error');
+                },
+                errorPlacement: function(error, element) {
+                    $(element).parents('.form-group').append(error);
+                }
+            });
+
+            //Advanced Form Validation
+            $('#add_default_id_validation').validate({
+                rules: {
+                    'date': {
+                        customdate: true
+                    },
+                    'creditcard': {
+                        creditcard: true
+                    }
+                },
+                highlight: function(input) {
+                    $(input).parents('.form-line').addClass('error');
+                },
+                unhighlight: function(input) {
+                    $(input).parents('.form-line').removeClass('error');
+                },
+                errorPlacement: function(error, element) {
+                    $(element).parents('.form-group').append(error);
+                }
+            });
+
+            //Custom Validations ===============================================================================
+            //Date
+            $.validator.addMethod('customdate', function(value, element) {
+                    return value.match(/^\d\d\d\d?-\d\d?-\d\d$/);
+                },
+                'Please enter a date in the format YYYY-MM-DD.'
+            );
+
+            //Credit card
+            $.validator.addMethod('creditcard', function(value, element) {
+                    return value.match(/^\d\d\d\d?-\d\d\d\d?-\d\d\d\d?-\d\d\d\d$/);
+                },
+                'Please enter a credit card in the format XXXX-XXXX-XXXX-XXXX.'
+            );
+            //==================================================================================================
+        });
+    </script>
     <!-- Custom Js -->
     <script src="js/admin.js"></script>
     <script src="js/pages/index.js"></script>

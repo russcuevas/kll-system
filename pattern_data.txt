@@ -1,0 +1,56 @@
+tbl_admin
+id -> auto increment
+profile_picture
+fullname
+email
+password
+created_at
+updated_at
+
+tbl_examiners
+id -> auto increment
+default_id
+fullname
+gender
+age
+birthday
+strand
+email
+password
+created_at
+updated_at
+
+tbl_courses
+id -> auto increment
+course_name
+course_description
+course_picture -> json format multiple entry of picture
+school_year
+created_at
+updated_at
+
+tbl_preffered_courses
+id -> auto increment
+user_id -> foreign to tbl_examiners id
+course_1 -> foreign to tbl_courses id
+course_2 -> foreign to tbl_courses id
+course_3 -> foreign to tbl_courses id
+created_at
+updated_at
+
+tbl_questions
+id -> auto increment
+question_text
+related_course -> foreign to tbl_courses json format can select many
+created_at
+updated_at
+
+tbl_responses
+id -> auto increment
+user_id -> foreign to tbl_users id
+question_id -> foreign to tbl_questions id
+selected_option_id -> Boolean true or false
+points -> 1 points if true 0 if false
+created_at
+updated_at
+

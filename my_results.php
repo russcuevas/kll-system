@@ -107,7 +107,7 @@
                 <a href="javascript:void(0);" class="bars"></a>
                 <a id="app-title" style="display:flex;align-items:center" class="navbar-brand" href="index.php">
                     <img id="bcas-logo" style="width:45px;display:inline;margin-right:10px;" src="assets/images/kll-logo.jpg" />
-                    KLL Course-Path
+                    FUTURE: Facilitating University Track <br> Understanding and Recommendation Engine
                 </a>
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -273,11 +273,59 @@
                                             </td>
                                             <td>1 point</td>
                                         </tr>
+
+                                        <tr>
+                                            <td>2</td>
+                                            <td>I like to do puzzles</td>
+                                            <td>
+                                                Bachelor of Science in Computer Science <br>
+                                                Bachelor of Science in Business Administration <br>
+                                                Bachelor of Science in Criminology <br>
+                                            </td>
+                                            <td>1 point</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>3</td>
+                                            <td>I am good at working
+                                                independently</td>
+                                            <td>
+                                                Bachelor of Science in Computer Science <br>
+                                                Bachelor of Science in Business Administration <br>
+                                                Bachelor of Science in Criminology <br>
+                                            </td>
+                                            <td>1 point</td>
+                                        </tr>
+
+
+                                        <tr>
+                                            <td>4</td>
+                                            <td>I like to work in teams</td>
+                                            <td>
+                                                Bachelor of Science in Computer Science <br>
+                                                Bachelor of Science in Business Administration <br>
+                                                Bachelor of Science in Criminology <br>
+                                            </td>
+                                            <td>1 point</td>
+                                        </tr>
+
+
+                                        <tr>
+                                            <td>5</td>
+                                            <td>I am an ambitious person,
+                                                I set goals for myself</td>
+                                            <td>
+                                                Bachelor of Science in Computer Science <br>
+                                                Bachelor of Science in Business Administration <br>
+                                                Bachelor of Science in Criminology <br>
+                                            </td>
+                                            <td>1 point</td>
+                                        </tr>
                                     </tbody>
                                     <tfoot>
                                         <tr>
                                             <td colspan="3" style="text-align: right;"><strong>Total Points</strong></td>
-                                            <td><strong>1 point</strong></td>
+                                            <td><strong>5 point</strong></td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -413,5 +461,7 @@
     <!-- Demo Js -->
     <script src="admin/js/demo.js"></script>
 </body>
+
+</html>
 
 </html>

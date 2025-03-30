@@ -67,7 +67,7 @@
                 <a href="javascript:void(0);" class="bars"></a>
                 <a id="app-title" style="display:flex;align-items:center" class="navbar-brand" href="index.php">
                     <img id="bcas-logo" style="width:45px;display:inline;margin-right:10px;" src="assets/images/kll-logo.jpg" />
-                    KLL Course-Path
+                    FUTURE: Facilitating University Track <br> Understanding and Recommendation Engine
                 </a>
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">

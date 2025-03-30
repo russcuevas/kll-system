@@ -65,7 +65,7 @@
                 <a href="javascript:void(0);" class="bars"></a>
                 <a id="app-title" style="display:flex;align-items:center" class="navbar-brand" href="index.php">
                     <img id="bcas-logo" style="width:45px;display:inline;margin-right:10px;" src="images/dashboard/kll-logo.jpg" />
-                    KLL Course-Path
+                    FUTURE: Facilitating University Track <br> Understanding and Recommendation Engine
                 </a>
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -119,7 +119,7 @@
                         </div>
                         <div class="body">
                             <div>
-                                <a href="" class="btn bg-red waves-effect" style="margin-bottom: 15px;" data-toggle="modal" data-target="#addAdminModal">+ ADD ADMIN</a>
+                                <a href="add_admin.php" class="btn bg-red waves-effect" style="margin-bottom: 15px;">+ ADD ADMIN</a>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped table-hover js-basic-example dataTable">

@@ -117,7 +117,9 @@
     </nav>
 
     <header>
-        <h1>Welcome to KLL COURSE PATH</h1>
+        <h1>
+            FUTURE: Facilitating University Track <br> Understanding and Recommendation Engine
+        </h1>
         <p></p>
     </header>
 

@@ -42,8 +42,8 @@
 
                                 <div class="my-form-inner-container">
                                     <div class="panel-header">
-                                        <h2 class="text-center">
-                                            KLL COURSE PATH
+                                        <h2 style="font-size: 35px;" class="text-center">
+                                            FUTURE: Facilitating University Track Understanding and Recommendation Engine
                                         </h2>
                                     </div>
                                     <div class="panel-body">
