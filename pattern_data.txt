@@ -1,56 +1,224 @@
-tbl_admin
-id -> auto increment
-profile_picture
-fullname
-email
-password
-created_at
-updated_at
+-- Create the database
+CREATE DATABASE `kll_future`;
 
-tbl_examiners
-id -> auto increment
-default_id
-fullname
-gender
-age
-birthday
-strand
-email
-password
-created_at
-updated_at
+USE `kll_future`;
 
-tbl_courses
-id -> auto increment
-course_name
-course_description
-course_picture -> json format multiple entry of picture
-school_year
-created_at
-updated_at
+-- Table: tbl_admin (Admins)
+CREATE TABLE `tbl_admin` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `profile_picture` VARCHAR(255) NULL,
+    `fullname` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(255) NOT NULL UNIQUE,
+    `password` VARCHAR(255) NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
-tbl_preffered_courses
-id -> auto increment
-user_id -> foreign to tbl_examiners id
-course_1 -> foreign to tbl_courses id
-course_2 -> foreign to tbl_courses id
-course_3 -> foreign to tbl_courses id
-created_at
-updated_at
+-- Table: tbl_examiners (Users or Examiners)
+CREATE TABLE `tbl_examiners` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `default_id` INT NOT NULL,  -- Could be used for tracking or linking
+    `fullname` VARCHAR(255) NOT NULL,
+    `gender` ENUM('Male', 'Female', 'Other') NOT NULL,
+    `age` INT NOT NULL,
+    `birthday` DATE NOT NULL,
+    `strand` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(255) NOT NULL UNIQUE,
+    `password` VARCHAR(255) NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
-tbl_questions
-id -> auto increment
-question_text
-related_course -> foreign to tbl_courses json format can select many
-created_at
-updated_at
+-- Table: tbl_courses (Courses)
+CREATE TABLE `tbl_courses` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `course_name` VARCHAR(255) NOT NULL,
+    `course_description` TEXT NOT NULL,
+    `course_picture` JSON NOT NULL,  -- Store pictures as a JSON array
+    `school_year` VARCHAR(255) NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
-tbl_responses
-id -> auto increment
-user_id -> foreign to tbl_users id
-question_id -> foreign to tbl_questions id
-selected_option_id -> Boolean true or false
-points -> 1 points if true 0 if false
-created_at
-updated_at
+-- Table: tbl_preferred_courses (Examiners' Preferred Courses)
+CREATE TABLE `tbl_preferred_courses` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,  -- Foreign key to tbl_examiners
+    `course_1` INT NOT NULL,  -- Foreign key to tbl_courses
+    `course_2` INT NOT NULL,  -- Foreign key to tbl_courses
+    `course_3` INT NOT NULL,  -- Foreign key to tbl_courses
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `tbl_examiners`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`course_1`) REFERENCES `tbl_courses`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`course_2`) REFERENCES `tbl_courses`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`course_3`) REFERENCES `tbl_courses`(`id`) ON DELETE CASCADE
+);
 
+-- Table: tbl_questions (Questions)
+CREATE TABLE `tbl_questions` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `question_text` TEXT NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Table: tbl_question_courses (Question-Course Relationship, many-to-many)
+CREATE TABLE `tbl_question_courses` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `question_id` INT NOT NULL,  -- Foreign key to tbl_questions
+    `course_id` INT NOT NULL,    -- Foreign key to tbl_courses
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`question_id`) REFERENCES `tbl_questions`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`course_id`) REFERENCES `tbl_courses`(`id`) ON DELETE CASCADE
+);
+
+-- Table: tbl_responses (User Responses)
+CREATE TABLE `tbl_responses` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,  -- Foreign key to tbl_examiners
+    `question_id` INT NOT NULL,  -- Foreign key to tbl_questions
+    `course_id` INT NOT NULL,    -- Foreign key to tbl_courses (for related courses)
+    `selected_option_id` BOOLEAN NOT NULL,  -- True or False answer
+    `points` INT DEFAULT 0,  -- 1 point if correct, 0 if incorrect
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `tbl_examiners`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`question_id`) REFERENCES `tbl_questions`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`course_id`) REFERENCES `tbl_courses`(`id`) ON DELETE CASCADE
+);
+
+NEW DB
+
+-- Use the kll_future database
+USE `kll_future`;
+
+-- Sample Data for tbl_admin (Admins)
+INSERT INTO `tbl_admin` (`profile_picture`, `fullname`, `email`, `password`)
+VALUES
+('profile1.jpg', 'Admin User', 'admin@example.com', 'adminpassword');
+
+-- Sample Data for tbl_examiners (Users or Examiners)
+INSERT INTO `tbl_examiners` (`default_id`, `fullname`, `gender`, `age`, `birthday`, `strand`, `email`, `password`)
+VALUES
+(101, 'John Doe', 'Male', 22, '2002-04-15', 'STEM', 'john@example.com', 'userpassword'),
+(102, 'Jane Smith', 'Female', 20, '2004-06-23', 'ABM', 'jane@example.com', 'userpassword');
+
+-- Sample Data for tbl_courses (Courses)
+INSERT INTO `tbl_courses` (`course_name`, `course_description`, `course_picture`, `school_year`)
+VALUES
+('BSIT', 'Bachelor of Science in Information Technology', '["image1.jpg", "image2.jpg"]', '2024'),
+('BSBA', 'Bachelor of Science in Business Administration', '["image3.jpg", "image4.jpg"]', '2024'),
+('BSEd', 'Bachelor of Secondary Education', '["image5.jpg", "image6.jpg"]', '2024');
+
+-- Sample Data for tbl_preferred_courses (Examiners\' Preferred Courses)
+INSERT INTO `tbl_preferred_courses` (`user_id`, `course_1`, `course_2`, `course_3`)
+VALUES
+(1, 1, 2, 3),  -- John Doe prefers BSIT, BSBA, and BSEd
+(2, 2, 1, 3);  -- Jane Smith prefers BSBA, BSIT, and BSEd
+
+-- Sample Data for tbl_questions (Questions)
+INSERT INTO `tbl_questions` (`question_text`)
+VALUES
+('What is Information Technology?'),
+('What are the major subjects in Business Administration?'),
+('What subjects are needed for Bachelor of Secondary Education?');
+
+-- Sample Data for tbl_question_courses (Question-Course Relationship)
+INSERT INTO `tbl_question_courses` (`question_id`, `course_id`)
+VALUES
+(1, 1),  -- Question 1 (What is IT?) is related to BSIT
+(1, 2),  -- Question 1 is related to BSBA
+(2, 2),  -- Question 2 (Business Admin subjects) is related to BSBA
+(3, 3);  -- Question 3 (Secondary Education subjects) is related to BSEd
+
+-- Sample Data for tbl_responses (User Responses)
+-- John answers Question 1 correctly for BSIT and BSBA
+INSERT INTO `tbl_responses` (`user_id`, `question_id`, `course_id`, `selected_option_id`, `points`)
+VALUES
+(1, 1, 1, TRUE, 1),  -- John answers "What is IT?" correctly for BSIT
+(1, 1, 2, TRUE, 1);  -- John answers "What is IT?" correctly for BSBA
+
+-- Jane answers Question 1 correctly for BSBA
+INSERT INTO `tbl_responses` (`user_id`, `question_id`, `course_id`, `selected_option_id`, `points`)
+VALUES
+(2, 1, 2, TRUE, 1);  -- Jane answers "What is IT?" correctly for BSBA
+
+-- John answers Question 2 correctly for BSBA
+INSERT INTO `tbl_responses` (`user_id`, `question_id`, `course_id`, `selected_option_id`, `points`)
+VALUES
+(1, 2, 2, TRUE, 1);  -- John answers "What are the subjects?" correctly for BSBA
+
+-- Jane answers Question 2 correctly for BSBA
+INSERT INTO `tbl_responses` (`user_id`, `question_id`, `course_id`, `selected_option_id`, `points`)
+VALUES
+(2, 2, 2, TRUE, 1);  -- Jane answers "What are the subjects?" correctly for BSBA
+
+-- John answers Question 3 correctly for BSEd
+INSERT INTO `tbl_responses` (`user_id`, `question_id`, `course_id`, `selected_option_id`, `points`)
+VALUES
+(1, 3, 3, TRUE, 1);  -- John answers "What subjects are needed?" correctly for BSEd
+
+-- Jane answers Question 3 correctly for BSEd
+INSERT INTO `tbl_responses` (`user_id`, `question_id`, `course_id`, `selected_option_id`, `points`)
+VALUES
+(2, 3, 3, TRUE, 1);  -- Jane answers "What subjects are needed?" correctly for BSEd
+
+
+
+QUERY TO Responses
+SELECT
+    e.id AS user_id,
+    e.fullname AS user_fullname,
+    GROUP_CONCAT(c.course_name SEPARATOR ', ') AS course_names,
+    q.question_text,
+    CASE
+        WHEN MAX(r.points) = 1 THEN 1  -- If any answer has 1 point, show 1
+        ELSE 0
+    END AS points,
+    GROUP_CONCAT(r.created_at SEPARATOR ', ') AS response_times
+FROM
+    tbl_preferred_courses pc
+JOIN
+    tbl_examiners e ON pc.user_id = e.id
+JOIN
+    tbl_courses c ON c.id IN (pc.course_1, pc.course_2, pc.course_3)
+JOIN
+    tbl_question_courses qc ON qc.course_id = c.id
+JOIN
+    tbl_questions q ON q.id = qc.question_id
+JOIN
+    tbl_responses r ON r.user_id = e.id AND r.question_id = q.id AND r.course_id = c.id
+WHERE
+    e.id = 1  -- Specify the user_id for the specific user (e.g., 1 for John Doe)
+GROUP BY
+    e.id, q.id  -- Group by user and question to ensure one row per question
+ORDER BY
+    r.created_at;
+
+
+SCORE QUERY
+SELECT
+    e.id AS user_id,
+    e.fullname AS user_fullname,
+    c.course_name,
+    COUNT(r.id) AS answered_questions
+FROM
+    tbl_preferred_courses pc
+JOIN
+    tbl_examiners e ON pc.user_id = e.id
+JOIN
+    tbl_courses c ON c.id IN (pc.course_1, pc.course_2, pc.course_3)
+JOIN
+    tbl_question_courses qc ON qc.course_id = c.id
+JOIN
+    tbl_questions q ON q.id = qc.question_id
+JOIN
+    tbl_responses r ON r.user_id = e.id AND r.question_id = q.id AND r.course_id = c.id
+WHERE
+    e.id = 1  -- Specify the user_id for the specific user (e.g., 1 for John Doe)
+GROUP BY
+    e.id, c.course_name
+ORDER BY
+    c.course_name;

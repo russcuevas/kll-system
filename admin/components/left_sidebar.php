@@ -3,7 +3,7 @@
             <!-- Menu -->
             <div class="menu">
                 <ul class="list">
-                    <li class="header" style="font-size:14px !important; color: #333 !important;">Welcome <br> <label style="font-weight:700; color: #7D0A0A;">Mark Angelo Baclayo</label></li>
+                    <li class="header" style="font-size:14px !important; color: #333 !important;">Administrator <br> <label style="font-weight:700; color: #7D0A0A;"><?php echo $_SESSION['fullname'] ?> <br> <?php echo $_SESSION['email'] ?></label></li>
                     <li class="active">
                         <a href="index.php">
                             <i class="material-icons">home</i>

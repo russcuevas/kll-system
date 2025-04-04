@@ -2,29 +2,26 @@
 include '../database/connection.php';
 include 'session_not_login.php';
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Sanitize input values
+    $admin_id = $_POST['admin_id'];
     $fullname = htmlspecialchars(trim($_POST['fullname']));
     $email = htmlspecialchars(trim($_POST['email']));
-    $password = htmlspecialchars(trim($_POST['password']));
     $contact_number = htmlspecialchars(trim($_POST['contact_number']));
 
-    $hashed_password = sha1($password);
-
-    // Check if the email already exists
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM tbl_admin WHERE email = :email");
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM tbl_admin WHERE email = :email AND id != :admin_id");
     $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':admin_id', $admin_id);
     $stmt->execute();
 
-    // Email validation
     if ($stmt->fetchColumn() > 0) {
-        $_SESSION['errors'] = "The email address is already in use. Please choose another one.";
-        header("Location: add_admin.php");  // Redirect to display error
+        $_SESSION['errors'] = "The email address is already in use by another admin. Please choose another one.";
+        header("Location: update_admin.php?id=$admin_id");
         exit;
     }
 
-    // Process image upload
+    $password = !empty($_POST['password']) ? htmlspecialchars(trim($_POST['password'])) : null;
+    $hashed_password = $password ? sha1($password) : null;
+
     $profile_picture = null;
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == 0) {
         $file_tmp = $_FILES['profile_picture']['tmp_name'];
@@ -34,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if (!in_array($file_ext, $allowed_extensions)) {
             $_SESSION['errors'] = "Only JPG, JPEG, PNG, and GIF files are allowed.";
-            header("Location: add_admin.php");
+            header("Location: update_admin.php?id=$admin_id");
             exit;
         }
 
@@ -42,44 +39,78 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $new_file_name = uniqid() . '.' . $file_ext;
         $file_path = $target_dir . $new_file_name;
 
-        // Create directory if it doesn't exist
         if (!is_dir($target_dir)) {
             mkdir($target_dir, 0777, true);
         }
 
-        // Move the uploaded file to the directory
         if (move_uploaded_file($file_tmp, $file_path)) {
             $profile_picture = $new_file_name;
         } else {
             $_SESSION['errors'] = "Error uploading file.";
-            header("Location: add_admin.php");
+            header("Location: update_admin.php?id=$admin_id");
             exit;
         }
     }
 
-    // Insert the new admin data into the database
-    $query = "INSERT INTO tbl_admin (fullname, email, password, contact_number, profile_picture) 
-              VALUES (:fullname, :email, :password, :contact_number, :profile_picture)";
-    $stmt = $conn->prepare($query);
-
-    // Bind parameters to the query
-    $stmt->bindParam(':fullname', $fullname);
-    $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':password', $hashed_password);
-    $stmt->bindParam(':contact_number', $contact_number);
-    $stmt->bindParam(':profile_picture', $profile_picture);
-
-    // Execute the query
-    if ($stmt->execute()) {
-        $_SESSION['success'] = "Admin added successfully!";
-    } else {
-        $_SESSION['errors'] = "Failed to add admin.";
+    if (!$password) {
+        $stmt = $conn->prepare("SELECT password FROM tbl_admin WHERE id = :admin_id");
+        $stmt->bindParam(':admin_id', $admin_id);
+        $stmt->execute();
+        $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+        $hashed_password = $admin['password'];
     }
 
-    header("Location: add_admin.php");
+    $query = "UPDATE tbl_admin SET fullname = :fullname, email = :email, contact_number = :contact_number";
+    if ($hashed_password !== null) {
+        $query .= ", password = :password";
+    }
+    if ($profile_picture !== null) {
+        $query .= ", profile_picture = :profile_picture";
+    }
+    $query .= " WHERE id = :admin_id";
+
+    $stmt = $conn->prepare($query);
+
+    $stmt->bindParam(':fullname', $fullname);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':contact_number', $contact_number);
+    $stmt->bindParam(':admin_id', $admin_id);
+
+    if ($hashed_password !== null) {
+        $stmt->bindParam(':password', $hashed_password);
+    }
+    if ($profile_picture !== null) {
+        $stmt->bindParam(':profile_picture', $profile_picture);
+    }
+
+    if ($stmt->execute()) {
+        $_SESSION['success'] = "Admin updated successfully!";
+    } else {
+        $_SESSION['errors'] = "Failed to update admin.";
+    }
+
+    header("Location: update_admin.php?id=$admin_id");
+    exit;
+}
+
+// Check if the admin ID exists in the URL
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $admin_id = $_GET['id'];
+    $stmt = $conn->prepare("SELECT * FROM tbl_admin WHERE id = :admin_id");
+    $stmt->bindParam(':admin_id', $admin_id);
+    $stmt->execute();
+    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$admin) {
+        header("Location: admin_management.php");
+        exit;
+    }
+} else {
+    header("Location: admin_management.php");
     exit;
 }
 ?>
+
 
 
 <!DOCTYPE html>
@@ -186,18 +217,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <ol style="font-size: 15px;" class="breadcrumb breadcrumb-col-red">
                     <li><a href="index.php"><i style="font-size: 20px;" class="material-icons">home</i>
                             Dashboard</a></li>
-                    <li class="active"><i style="font-size: 20px;" class="material-icons">add</i> Add Admin
+                    <li class="active"><i style="font-size: 20px;" class="material-icons">edit</i> Update Admin
                     </li>
                 </ol>
             </div>
 
-            <!-- Widgets -->
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
                         <div class="header">
                             <h2 style="font-size: 25px; font-weight: 900; color: #7D0A0A;">
-                                Add admin
+                                Update "<?= $admin['fullname'] ?>" Profile
                             </h2>
                         </div>
                         <div class="body">
@@ -206,59 +236,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <div class="alert alert-success" role="alert">
                                     <?= $_SESSION['success']; ?>
                                 </div>
-                                <?php unset($_SESSION['success']);
-                                ?>
+                                <?php unset($_SESSION['success']); ?>
                             <?php elseif (isset($_SESSION['errors'])) : ?>
                                 <div class="alert alert-danger" role="alert">
                                     <?= $_SESSION['errors']; ?>
                                 </div>
-                                <?php unset($_SESSION['errors']);
-                                ?>
+                                <?php unset($_SESSION['errors']); ?>
                             <?php endif; ?>
                             <!-- END ALERTS -->
-                            <form action="" id="add_admin_validation" method="POST" enctype="multipart/form-data">
-                                <div class="form-group form-float" style="margin-top: 20px !important;">
+                            <form action="" id="update_admin_validation" method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="admin_id" value="<?= $admin['id']; ?>">
+                                <div class="form-group form-float">
                                     <div class="form-line">
-                                        <input type="file" class="form-control" name="profile_picture" required onchange="previewImage(event)">
-                                        <label class="form-label">Profile Picture</label>
-                                    </div>
-                                    <div id="image-preview-container" style="display:none; margin-top: 10px;">
-                                        <img id="image-preview" src="#" alt="Profile Picture" style="width: 100px; height: 100px;" />
+                                        <label>Profile Picture</label>
+                                        <input type="file" class="form-control" name="profile_picture" onchange="previewImage(event)">
+                                        <?php if (!empty($admin['profile_picture'])): ?>
+                                            <img src="profile/images/<?= htmlspecialchars($admin['profile_picture']); ?>" width="100" height="100">
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <div class="form-group form-float">
                                     <div class="form-line">
-                                        <input type="text" class="form-control" name="fullname" required>
-                                        <label class="form-label">Fullname</label>
+                                        <label>Fullname <span style="color: red;">*</span></label>
+                                        <input type="text" name="fullname" class="form-control" value="<?= htmlspecialchars($admin['fullname']); ?>" required>
                                     </div>
                                 </div>
                                 <div class="form-group form-float">
                                     <div class="form-line">
-                                        <input type="email" class="form-control" name="email" required>
-                                        <label class="form-label">Email</label>
+                                        <label>Email <span style="color: red;">*</span></label>
+                                        <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($admin['email']); ?>" required>
                                     </div>
                                 </div>
                                 <div class="form-group form-float">
                                     <div class="form-line">
-                                        <input type="text" class="form-control" name="password" required>
-                                        <label class="form-label">Password</label>
+                                        <label>Password</label>
+                                        <input type="password" name="password" class="form-control">
                                     </div>
                                 </div>
                                 <div class="form-group form-float">
                                     <div class="form-line">
-                                        <input type="number" class="form-control" maxlength="11" name="contact_number" required>
-                                        <label class="form-label">Phone number</label>
+                                        <label>Phone Number <span style="color: red;">*</span></label>
+                                        <input type="text" name="contact_number" class="form-control" value="<?= htmlspecialchars($admin['contact_number']); ?>" required>
                                     </div>
                                 </div>
-                                <button class="btn btn-primary waves-effect" type="submit">SUBMIT</button>
+                                <button type="submit" class="btn btn-primary">Update</button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- #END# Advanced Validation -->
-
-
+        </div>
     </section>
 
     <!-- Jquery Core Js -->
@@ -343,7 +370,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             });
 
             //Advanced Form Validation
-            $('#add_admin_validation').validate({
+            $('#update_admin_validation').validate({
                 rules: {
                     'date': {
                         customdate: true

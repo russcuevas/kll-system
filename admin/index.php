@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿<?php
+include '../database/connection.php';
+include 'session_not_login.php';
+
+?>
+<!DOCTYPE html>
 <html>
 
 <head>

@@ -1,3 +1,14 @@
+<?php
+include '../database/connection.php';
+include 'session_not_login.php';
+
+// FETCH ADMIN
+$get_admin = "SELECT * FROM `tbl_admin`";
+$stmt_get_admin = $conn->query($get_admin);
+$admins = $stmt_get_admin->fetchAll(PDO::FETCH_ASSOC);
+// END FETCH ADMIN
+
+?>
 <!DOCTYPE html>
 <html>
 
@@ -122,6 +133,19 @@
                                 <a href="add_admin.php" class="btn bg-red waves-effect" style="margin-bottom: 15px;">+ ADD ADMIN</a>
                             </div>
                             <div class="table-responsive">
+                                <?php if (isset($_SESSION['success'])) : ?>
+                                    <div class="alert alert-success" role="alert">
+                                        <?= $_SESSION['success']; ?>
+                                    </div>
+                                    <?php unset($_SESSION['success']);
+                                    ?>
+                                <?php elseif (isset($_SESSION['errors'])) : ?>
+                                    <div class="alert alert-danger" role="alert">
+                                        <?= $_SESSION['errors']; ?>
+                                    </div>
+                                    <?php unset($_SESSION['errors']);
+                                    ?>
+                                <?php endif; ?>
                                 <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
                                     <thead>
                                         <tr>
@@ -134,18 +158,27 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Sample Profile</td>
-                                            <td>Mark Angelo Baclayo Admin</td>
-                                            <td>markangelo@gmail.com</td>
-                                            <td>March 13, 2025</td>
-                                            <td>March 13, 2025</td>
-                                            <td>
-                                                <a href="" class="btn btn-warning">Update</a>
-                                                <a href="" class="btn btn-danger">Delete</a>
-                                            </td>
-                                        </tr>
+                                        <?php foreach ($admins as $admin): ?>
+                                            <tr>
+                                                <td>
+                                                    <?php if (!empty($admin['profile_picture'])): ?>
+                                                        <img src="profile/images/<?php echo htmlspecialchars($admin['profile_picture']); ?>" alt="Profile Picture" width="50" height="50">
+                                                    <?php else: ?>
+                                                        <img src="profile/images/default.jpg" alt="Default Profile Picture" width="50" height="50">
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($admin['fullname']); ?></td>
+                                                <td><?php echo htmlspecialchars($admin['email']); ?></td>
+                                                <td><?php echo date('F j, Y', strtotime($admin['created_at'])); ?></td>
+                                                <td><?php echo date('F j, Y', strtotime($admin['updated_at'])); ?></td>
+                                                <td>
+                                                    <a href="update_admin.php?id=<?php echo $admin['id']; ?>" class="btn btn-warning">Update</a>
+                                                    <a href="javascript:void(0);" onclick="confirmDelete(<?php echo $admin['id']; ?>);" class="btn btn-danger">Delete</a>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
                                     </tbody>
+
                                 </table>
                             </div>
                         </div>
@@ -218,6 +251,18 @@
     <!-- Custom Js -->
     <script src="js/admin.js"></script>
     <script src="js/pages/index.js"></script>
+
+    <!-- ADMIN CONFIRMATION DELETE -->
+    <script type="text/javascript">
+        function confirmDelete(adminId) {
+            var confirmation = confirm("Are you sure you want to delete this admin?");
+            if (confirmation) {
+                window.location.href = "delete_admin.php?id=" + adminId;
+            } else {
+                return false;
+            }
+        }
+    </script>
 
     <!-- Demo Js -->
     <script src="js/demo.js"></script>
