@@ -1,3 +1,14 @@
+<?php
+include '../database/connection.php';
+include 'session_not_login.php';
+
+// FETCH COURSE
+$get_course = "SELECT * FROM `tbl_courses`";
+$stmt_get_course = $conn->query($get_course);
+$courses = $stmt_get_course->fetchAll(PDO::FETCH_ASSOC);
+// END FETCH COURSE
+
+?>
 <!DOCTYPE html>
 <html>
 
@@ -32,6 +43,19 @@
 
         body {
             font-family: 'Poppins', sans-serif !important;
+        }
+
+        .scroll-container {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 0;
+            max-width: 150px;
+        }
+
+        .scroll-container img {
+            height: 70px;
+            width: 150px;
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -122,9 +146,22 @@
                         </div>
                         <div class="body">
                             <div>
-                                <a href="" class="btn bg-red waves-effect" style="margin-bottom: 15px;" data-toggle="modal" data-target="#addAdminModal">+ ADD COURSE</a>
+                                <a href="add_course.php" class="btn bg-red waves-effect" style="margin-bottom: 15px;">+ ADD COURSE</a>
                             </div>
                             <div class="table-responsive">
+                                <?php if (isset($_SESSION['success'])) : ?>
+                                    <div class="alert alert-success" role="alert">
+                                        <?= $_SESSION['success']; ?>
+                                    </div>
+                                    <?php unset($_SESSION['success']);
+                                    ?>
+                                <?php elseif (isset($_SESSION['errors'])) : ?>
+                                    <div class="alert alert-danger" role="alert">
+                                        <?= $_SESSION['errors']; ?>
+                                    </div>
+                                    <?php unset($_SESSION['errors']);
+                                    ?>
+                                <?php endif; ?>
                                 <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
                                     <thead>
                                         <tr>
@@ -137,76 +174,37 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>
-                                                <img style="height: 70px; width: 150px;" src="https://images.ctfassets.net/wp1lcwdav1p1/7JwZNrzXiFWPAkdcenHTRN/debb648bfa04176d87ae8702bf6607f8/GettyImages-1280720394.jpg?w=1500&h=680&q=60&fit=fill&f=faces&fm=jpg&fl=progressive" alt="">
-                                            </td>
-                                            <td>Bachelor of Science in Computer Science</td>
-                                            <td>A bachelor's degree in computer science is a four-year undergraduate program that covers both theoretical and practical aspects of designing, developing, and testing software.</td>
-                                            <td>March 13, 2025</td>
-                                            <td>March 13, 2025</td>
-                                            <td>
-                                                <a href="" class="btn btn-warning mb-2">Update</a>
-                                                <a href="" class="btn btn-danger">Delete</a>
-                                            </td>
-                                        </tr>
+                                        <?php foreach ($courses as $course): ?>
+                                            <tr>
+                                                <td>
+                                                    <?php
+                                                    // Decode the JSON data to get the image filenames
+                                                    $images = json_decode($course['course_picture'], true);
 
-                                        <tr>
-                                            <td>
-                                                <img style="height: 70px; width: 150px;" src="https://149747948.v2.pressablecdn.com/wp-content/uploads/GPS_Blog-BSN-BS.jpg" alt="">
-                                            </td>
-                                            <td>Bachelor of Science in Nursing</td>
-                                            <td>Bachelor of Science in Nursing (BSN) is a four-year program consisting of general education, major and professional nursing courses.</td>
-                                            <td>March 13, 2025</td>
-                                            <td>March 13, 2025</td>
-                                            <td>
-                                                <a href="" class="btn btn-warning mb-2">Update</a>
-                                                <a href="" class="btn btn-danger">Delete</a>
-                                            </td>
-                                        </tr>
+                                                    if (!empty($images)) {
+                                                        // Wrap the images in a div container for scrolling
+                                                        echo '<div style="display: flex; overflow-x: auto; padding: 10px 0; max-width: 150px;">';
 
-                                        <tr>
-                                            <td>
-                                                <img style="height: 70px; width: 150px;" src="https://evlumogdang23.wordpress.com/wp-content/uploads/2013/02/0.jpeg" alt="">
-                                            </td>
-                                            <td>Bachelor of Science in Criminology</td>
-                                            <td>BSCRIM stands for Bachelor of Science in Criminology. It's a degree program that focuses on the study of crime, criminal behavior, and the justice system.
-                                            </td>
-                                            <td>March 13, 2025</td>
-                                            <td>March 13, 2025</td>
-                                            <td>
-                                                <a href="" class="btn btn-warning mb-2">Update</a>
-                                                <a href="" class="btn btn-danger">Delete</a>
-                                            </td>
-                                        </tr>
+                                                        // Loop through each image and display it
+                                                        foreach ($images as $image) {
+                                                            $image_path = "profile/courses/" . $image; // Adjust path as necessary
+                                                            echo '<img src="' . $image_path . '" alt="Course Image" style="height: 70px; width: 150px; margin-right: 10px;">';
+                                                        }
 
-                                        <tr>
-                                            <td>
-                                                <img style="height: 70px; width: 150px;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXoYzxWekvC2tpolos5dvRJzvQTaweHjyZjQ&s" alt="">
-                                            </td>
-                                            <td>Bachelor of Science in Education</td>
-                                            <td>Bachelor of Science in Education program, which prepares individuals for teaching roles, particularly in secondary education, and may include specializations in subjects like English, Mathematics, or Science. </td>
-                                            <td>March 13, 2025</td>
-                                            <td>March 13, 2025</td>
-                                            <td>
-                                                <a href="" class="btn btn-warning mb-2">Update</a>
-                                                <a href="" class="btn btn-danger">Delete</a>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>
-                                                <img style="height: 70px; width: 150px;" src="https://regent.ac.za/wp-content/uploads/2020/06/shutterstock_374127247-1-scaled.jpg" alt="">
-                                            </td>
-                                            <td>Bachelor of Science in Business Administration</td>
-                                            <td>A Bachelor of Business Administration (BBA or BSBA) is a four-year undergraduate degree that provides a broad foundation in core business principles, preparing students for a wide range of careers and further studies in business.</td>
-                                            <td>March 13, 2025</td>
-                                            <td>March 13, 2025</td>
-                                            <td>
-                                                <a href="" class="btn btn-warning mb-2">Update</a>
-                                                <a href="" class="btn btn-danger">Delete</a>
-                                            </td>
-                                        </tr>
+                                                        echo '</div>'; // Close the scrolling container
+                                                    }
+                                                    ?>
+                                                </td>
+                                                <td><?php echo $course['course_name'] ?></td>
+                                                <td><?php echo $course['course_description'] ?></td>
+                                                <td><?php echo date('F j, Y', strtotime($course['created_at'])); ?></td>
+                                                <td><?php echo date('F j, Y', strtotime($course['updated_at'])); ?></td>
+                                                <td>
+                                                    <a href="update_course.php?course_id=<?= $course['id'] ?>" class="btn btn-warning mb-2">Update</a>
+                                                    <a href="javascript:void(0);" onclick="confirmDelete(<?php echo $course['id']; ?>);" class="btn btn-danger">Delete</a>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -275,6 +273,18 @@
                 ]
             });
         });
+    </script>
+
+    <!-- COURSE CONFIRMATION DELETE -->
+    <script type="text/javascript">
+        function confirmDelete(courseId) {
+            var confirmation = confirm("Are you sure you want to delete this course?");
+            if (confirmation) {
+                window.location.href = "delete_course.php?id=" + courseId;
+            } else {
+                return false;
+            }
+        }
     </script>
 
     <!-- Custom Js -->
