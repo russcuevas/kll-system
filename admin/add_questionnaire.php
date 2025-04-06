@@ -2,19 +2,38 @@
 include '../database/connection.php';
 include 'session_not_login.php';
 
-// Fetch the data by joining tbl_questions, tbl_question_courses, and tbl_courses
-$sql = "
-    SELECT q.id AS question_id, q.question_text, GROUP_CONCAT(c.course_name ORDER BY c.course_name ASC SEPARATOR '<br>') AS course_names, q.created_at, q.updated_at
-    FROM tbl_questions q
-    LEFT JOIN tbl_question_courses qc ON q.id = qc.question_id
-    LEFT JOIN tbl_courses c ON qc.course_id = c.id
-    GROUP BY q.id
-    ORDER BY q.created_at DESC
-";
+// FETCH COURSE
+$get_course = "SELECT * FROM `tbl_courses`";
+$stmt_get_course = $conn->query($get_course);
+$courses = $stmt_get_course->fetchAll(PDO::FETCH_ASSOC);
+// END FETCH COURSE
 
-$stmt = $conn->query($sql);
-$questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $question_text = $_POST['question_text'];
+    $course_ids = $_POST['course_id'];
+    $conn->beginTransaction();
+
+    $stmt = $conn->prepare("INSERT INTO tbl_questions (question_text, created_at, updated_at) VALUES (:question_text, NOW(), NOW())");
+    $stmt->bindParam(':question_text', $question_text);
+    $stmt->execute();
+
+    $question_id = $conn->lastInsertId();
+
+    foreach ($course_ids as $course_id) {
+        $stmt = $conn->prepare("INSERT INTO tbl_question_courses (question_id, course_id, created_at, updated_at) VALUES (:question_id, :course_id, NOW(), NOW())");
+        $stmt->bindParam(':question_id', $question_id);
+        $stmt->bindParam(':course_id', $course_id);
+        $stmt->execute();
+    }
+
+    $conn->commit();
+    $_SESSION['success'] = "Question added successfully!";
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
+}
 ?>
+
+
 
 <!DOCTYPE html>
 <html>
@@ -31,10 +50,14 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
     <!-- Bootstrap Core Css -->
     <link href="plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap Select Css -->
+    <link href="plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet">
     <!-- Waves Effect Css -->
     <link href="plugins/node-waves/waves.css" rel="stylesheet" />
     <!-- Animation Css -->
     <link href="plugins/animate-css/animate.css" rel="stylesheet" />
+    <!-- Multi Select Css -->
+    <link href="plugins/multi-select/css/multi-select.css" rel="stylesheet">
     <!-- JQuery DataTable Css -->
     <link href="plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
     <!-- Custom Css -->
@@ -48,65 +71,6 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         body {
             font-family: 'Poppins', sans-serif !important;
-        }
-
-        .select-form {
-            display: block !important;
-            width: 100% !important;
-            height: 34px !important;
-            padding: 6px 12px !important;
-            font-size: 14px !important;
-            line-height: 1.42857143 !important;
-            color: #555 !important;
-            background-color: #fff !important;
-            background-image: none !important;
-            border: 1px solid #ccc !important;
-            border-radius: 4px !important;
-            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075) !important;
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075) !important;
-            -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s !important;
-            -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s !important;
-            transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s !important;
-        }
-
-        @media only screen and (max-width: 600px) {
-            .btn {
-                font-size: 9px !important;
-                height: 27px;
-                padding-top: 0 !important;
-                padding-bottom: 0 !important;
-            }
-
-
-            .btn .material-icons {
-                font-size: 14px !important;
-                top: 2px;
-            }
-
-            .filter-button {
-                margin: 0 auto 20px;
-                height: 34px;
-                display: block;
-            }
-
-
-        }
-
-        @media (min-width: 992px) {
-
-            .select-form-lg {
-                margin-left: -20px !important;
-            }
-
-            .filter-button {
-                margin: 0 auto 20px;
-                height: 33px;
-                margin-left: -40px !important;
-            }
-        }
-
-        .table-responsive {
-            border: none !important;
         }
     </style>
 </head>
@@ -177,11 +141,7 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <ol style="font-size: 15px;" class="breadcrumb breadcrumb-col-red">
                     <li><a href="index.php"><i style="font-size: 20px;" class="material-icons">home</i>
                             Dashboard</a></li>
-                    <li class="active"><i style="font-size: 20px;" class="material-icons">description</i>
-                        Assessment
-                    </li>
-                    <li class="active"><i style="font-size: 20px;" class="material-icons">description</i>
-                        Questionnaire
+                    <li class="active"><i style="font-size: 20px;" class="material-icons">description</i> Add questions
                     </li>
                 </ol>
             </div>
@@ -191,71 +151,50 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
                         <div class="header">
-                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                                <h2 class="m-0" style="font-size: 25px; font-weight: 900; color: #7D0A0A;">
-                                    List of Questions
-                                </h2>
-                                <div id="print-container">
-                                    <form id="printExamineesForm" style="display:inline;">
-                                        <button type="submit" class="btn bg-red waves-effect btn-sm">
-                                            <i class="material-icons">print</i>
-                                            <span>Download for Print</span>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
+                            <h2 style="font-size: 25px; font-weight: 900; color: #7D0A0A;">
+                                Add questions
+                            </h2>
                         </div>
                         <div class="body">
-                            <div>
-                                <a href="add_questionnaire.php" class="btn bg-red waves-effect" style="margin-bottom: 15px;">+ ADD QUESTIONS</a>
-                            </div>
-                            <div id="printable-area" class="table-responsive mt-3">
-                                <?php if (isset($_SESSION['success'])) : ?>
-                                    <div class="alert alert-success" role="alert">
-                                        <?= $_SESSION['success']; ?>
+                            <!-- ALERTS -->
+                            <?php if (isset($_SESSION['success'])) : ?>
+                                <div class="alert alert-success" role="alert">
+                                    <?= $_SESSION['success']; ?>
+                                </div>
+                                <?php unset($_SESSION['success']);
+                                ?>
+                            <?php elseif (isset($_SESSION['errors'])) : ?>
+                                <div class="alert alert-danger" role="alert">
+                                    <?= $_SESSION['errors']; ?>
+                                </div>
+                                <?php unset($_SESSION['errors']);
+                                ?>
+                            <?php endif; ?>
+                            <!-- END ALERTS -->
+                            <form action="" id="add_questions_validation" method="POST" enctype="multipart/form-data">
+                                <div class="form-group form-float" style="margin-top: 20px !important;">
+                                    <div class="form-line">
+                                        <input type="text" class="form-control" name="question_text" required>
+                                        <label class="form-label">Question:</label>
                                     </div>
-                                    <?php unset($_SESSION['success']);
-                                    ?>
-                                <?php elseif (isset($_SESSION['errors'])) : ?>
-                                    <div class="alert alert-danger" role="alert">
-                                        <?= $_SESSION['errors']; ?>
+                                </div>
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <select name="course_id[]" class="form-control show-tick" multiple data-live-search="true" required>
+                                            <?php foreach ($courses as $course): ?>
+                                                <option value="<?php echo $course['id'] ?>"><?php echo $course['course_name'] ?></option>
+                                            <?php endforeach ?>
+                                        </select>
+                                        <label class="form-label">Select Related Course:</label>
                                     </div>
-                                    <?php unset($_SESSION['errors']);
-                                    ?>
-                                <?php endif; ?>
-                                <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Question</th>
-                                            <th>Related Course</th>
-                                            <th>Created</th>
-                                            <th>Updated</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($questions as $question): ?>
-                                            <tr>
-                                                <td><?= $question['question_id'] ?></td>
-                                                <td><?= $question['question_text'] ?></td>
-                                                <td><?= $question['course_names'] ?></td>
-                                                <td><?= $question['created_at'] ?></td>
-                                                <td><?= $question['updated_at'] ?></td>
-                                                <td>
-                                                    <a href="update_question.php?id=<?= $question['question_id'] ?>" class="btn btn-warning">Update</a>
-                                                    <a href="javascript:void(0);" onclick="confirmDelete(<?= $question['question_id'] ?>);" class="btn btn-danger">Delete</a>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
+                                </div>
+                                <button class="btn btn-primary waves-effect" type="submit">SUBMIT</button>
+                            </form>
                         </div>
                     </div>
                 </div>
-
-
+            </div>
+            <!-- #END# Advanced Validation -->
     </section>
 
     <!-- Jquery Core Js -->
@@ -265,6 +204,10 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="js/pages/forms/form-validation.js"></script>
     <!-- Bootstrap Core Js -->
     <script src="plugins/bootstrap/js/bootstrap.js"></script>
+    <!-- Select Plugin Js -->
+    <script src="plugins/bootstrap-select/js/bootstrap-select.js"></script>
+    <!-- Multi Select Plugin Js -->
+    <script src="plugins/multi-select/js/jquery.multi-select.js"></script>
     <!-- Slimscroll Plugin Js -->
     <script src="plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
     <!-- Waves Effect Plugin Js -->
@@ -281,14 +224,14 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $(function() {
             $('.js-basic-example').DataTable({
                 responsive: true,
-                pageLength: 10,
+                pageLength: 5,
                 lengthChange: false
             });
 
             $('.js-exportable').DataTable({
                 dom: 'Bfrtip',
                 responsive: true,
-                pageLength: 10,
+                pageLength: 5,
                 lengthChange: false,
                 buttons: [{
                         extend: 'copy',
@@ -315,17 +258,69 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         });
     </script>
 
-    <!-- QUESTIONS CONFIRMATION DELETE -->
-    <script type="text/javascript">
-        function confirmDelete(questionId) {
-            var confirmation = confirm("Are you sure you want to delete this questions?");
-            if (confirmation) {
-                window.location.href = "delete_question.php?id=" + questionId;
-            } else {
-                return false;
-            }
-        }
+    <script>
+        $(function() {
+            $('#form_validation').validate({
+                rules: {
+                    'checkbox': {
+                        required: true
+                    },
+                    'gender': {
+                        required: true
+                    }
+                },
+                highlight: function(input) {
+                    $(input).parents('.form-line').addClass('error');
+                },
+                unhighlight: function(input) {
+                    $(input).parents('.form-line').removeClass('error');
+                },
+                errorPlacement: function(error, element) {
+                    $(element).parents('.form-group').append(error);
+                }
+            });
+
+            //Advanced Form Validation
+            $('#add_questions_validation').validate({
+                rules: {
+                    'date': {
+                        customdate: true
+                    },
+                    'creditcard': {
+                        creditcard: true
+                    }
+                },
+                highlight: function(input) {
+                    $(input).parents('.form-line').addClass('error');
+                },
+                unhighlight: function(input) {
+                    $(input).parents('.form-line').removeClass('error');
+                },
+                errorPlacement: function(error, element) {
+                    $(element).parents('.form-group').append(error);
+                }
+            });
+
+            //Custom Validations ===============================================================================
+            //Date
+            $.validator.addMethod('customdate', function(value, element) {
+                    return value.match(/^\d\d\d\d?-\d\d?-\d\d$/);
+                },
+                'Please enter a date in the format YYYY-MM-DD.'
+            );
+
+            //Credit card
+            $.validator.addMethod('creditcard', function(value, element) {
+                    return value.match(/^\d\d\d\d?-\d\d\d\d?-\d\d\d\d?-\d\d\d\d$/);
+                },
+                'Please enter a credit card in the format XXXX-XXXX-XXXX-XXXX.'
+            );
+            //==================================================================================================
+        });
     </script>
+
+    <!-- SWEETALERT -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <!-- Custom Js -->
     <script src="js/admin.js"></script>
