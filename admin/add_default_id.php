@@ -1,3 +1,89 @@
+<?php
+include '../database/connection.php';  // Include the PDO connection
+include 'session_not_login.php';  // Include session check (optional)
+
+// Get today's date in YYYYMMDD format
+$current_year = date('Y');
+$current_month = date('m');
+$current_day = date('d');
+$current_date = $current_year . $current_month . $current_day;
+
+// Create a variable for the value you want to bind to the query
+$search_pattern = $current_date . '%';
+
+// Query the database to find the highest sequence number for the current date
+$query = "SELECT default_id FROM tbl_examiners WHERE default_id LIKE :current_date ORDER BY default_id DESC LIMIT 1";
+$stmt = $conn->prepare($query);
+
+// Bind the parameter using the variable
+$stmt->bindParam(':current_date', $search_pattern); // Use the variable with the value
+$stmt->execute();
+
+// Check if there are existing IDs for today
+$existing_id = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($existing_id) {
+    // Extract the sequence number from the existing ID
+    $existing_id_value = $existing_id['default_id'];
+    $sequence_number = substr($existing_id_value, -2); // Get the last 2 digits (sequence)
+    $next_sequence = str_pad($sequence_number + 1, 2, '0', STR_PAD_LEFT);
+} else {
+    // If no existing ID for today, start with 01
+    $next_sequence = '01';
+}
+
+// Generate the new random ID
+$random_id = $current_date . '-' . $next_sequence;
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Sanitize and retrieve form inputs
+    $fullname = $_POST['fullname'];
+    $email = $_POST['email'];
+    $gender = $_POST['gender'];
+    $age = $_POST['age'];
+    $birthday = $_POST['birthday'];
+    $strand = $_POST['strand'];
+    $default_id = $_POST['default_id']; // Default ID, now included as hidden field
+
+    // Set the default password to "kll1234" and hash it using SHA-1
+    $default_password = "kll1234";
+    $hashed_password = sha1($default_password); // Hash the password
+
+    // Get the current timestamp for created_at and updated_at
+    $created_at = $updated_at = date("Y-m-d H:i:s");
+
+    // Prepare the SQL query
+    $query = "INSERT INTO tbl_examiners (default_id, fullname, gender, age, birthday, strand, email, password, created_at, updated_at)
+VALUES (:default_id, :fullname, :gender, :age, :birthday, :strand, :email, :password, :created_at, :updated_at)";
+
+    // Prepare the statement
+    $stmt = $conn->prepare($query);
+
+    // Bind the parameters to the prepared statement
+    $stmt->bindParam(':default_id', $default_id);
+    $stmt->bindParam(':fullname', $fullname);
+    $stmt->bindParam(':gender', $gender);
+    $stmt->bindParam(':age', $age);
+    $stmt->bindParam(':birthday', $birthday);
+    $stmt->bindParam(':strand', $strand);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':password', $hashed_password); // Insert the hashed password
+    $stmt->bindParam(':created_at', $created_at);
+    $stmt->bindParam(':updated_at', $updated_at);
+
+    // Execute the prepared statement
+    if ($stmt->execute()) {
+        header("Location: " . $_SERVER['PHP_SELF']); // This will refresh the page
+        exit; // Always call exit after header redirection
+    } else {
+        // Error message
+        echo "Error: Unable to add examiner.";
+    }
+}
+?>
+
+
+
 <!DOCTYPE html>
 <html>
 
@@ -32,6 +118,10 @@
 
         body {
             font-family: 'Poppins', sans-serif !important;
+        }
+
+        input::placeholder {
+            color: white !important;
         }
     </style>
 </head>
@@ -117,10 +207,11 @@
                             </h2>
                         </div>
                         <div class="body">
-                            <form id="add_default_id_validation" method="POST">
+                            <form id="add_default_id_validation" method="POST" action="">
                                 <div class="form-group form-float" style="margin-top: 20px !important;">
                                     <div class="form-line">
-                                        <input type="text" class="form-control" name="default_id" style="background-color: gray;" placeholder="091238774" required readonly>
+
+                                        <input style="background-color: gray;" type="text" class="form-control" name="default_id" value="<?php echo $random_id; ?>" placeholder="<?php echo $random_id; ?>" readonly>
                                         <label class="form-label">Examiners ID</label>
                                     </div>
                                 </div>
@@ -143,11 +234,11 @@
                                         <label class="form-label">Sex</label>
                                         <div style="display:flex;">
                                             <div>
-                                                <input name="gender" val="male" type="radio" id="male" checked />
+                                                <input name="gender" type="radio" id="male" value="male" checked />
                                                 <label class="radio" for="male">Male</label>
                                             </div>
                                             <div>
-                                                <input name="gender" val="male" type="radio" id="female" />
+                                                <input name="gender" type="radio" id="female" value="female" />
                                                 <label class="radio" for="female">Female</label>
                                             </div>
                                         </div>

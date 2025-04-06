@@ -20,13 +20,13 @@
                     <span>Admin</span>
                 </a>
             </li>
-            <li class="<?php echo (basename($_SERVER['PHP_SELF']) == 'add_examiners.php' || basename($_SERVER['PHP_SELF']) == 'examinees_list.php') ? 'active' : ''; ?>">
+            <li class="<?php echo (basename($_SERVER['PHP_SELF']) == 'add_examiners.php' || basename($_SERVER['PHP_SELF']) == 'examinees_list.php' || basename($_SERVER['PHP_SELF']) == 'add_default_id.php') ? 'active' : ''; ?>">
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="material-icons">groups</i>
                     <span>Examinees</span>
                 </a>
                 <ul class="ml-menu">
-                    <li class="<?php echo (basename($_SERVER['PHP_SELF']) == 'add_examiners.php') ? 'active' : ''; ?>">
+                    <li class="<?php echo (basename($_SERVER['PHP_SELF']) == 'add_examiners.php' || basename($_SERVER['PHP_SELF']) == 'add_default_id.php') ? 'active' : ''; ?>">
                         <a href="add_examiners.php">Add Examiners</a>
                     </li>
                     <li class="<?php echo (basename($_SERVER['PHP_SELF']) == 'examinees_list.php') ? 'active' : ''; ?>">
@@ -34,6 +34,7 @@
                     </li>
                 </ul>
             </li>
+
             <li class="<?php echo (basename($_SERVER['PHP_SELF']) == 'course.php' || basename($_SERVER['PHP_SELF']) == 'questionnaire.php' || basename($_SERVER['PHP_SELF']) == 'add_course.php' || basename($_SERVER['PHP_SELF']) == 'update_course.php' || basename($_SERVER['PHP_SELF']) == 'add_questionnaire.php' || basename($_SERVER['PHP_SELF']) == 'update_questionnaire.php') ? 'active' : ''; ?>">
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="material-icons">description</i>

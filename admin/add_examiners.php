@@ -1,3 +1,14 @@
+<?php
+include '../database/connection.php';
+include 'session_not_login.php';
+
+// FETCH COURSE
+$get_examiners = "SELECT * FROM `tbl_examiners`";
+$stmt_get_examiners = $conn->query($get_examiners);
+$examiners = $stmt_get_examiners->fetchAll(PDO::FETCH_ASSOC);
+// END FETCH COURSE
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -136,18 +147,57 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>2420580</td>
-                                            <td>Mark Angelo Baclayo Admin</td>
-                                            <td>March 13, 2025</td>
-                                            <td>March 13, 2025</td>
-                                            <td>
-                                                <a href="" class="btn btn-warning">View Information</a>
-                                            </td>
-                                        </tr>
+                                        <?php foreach ($examiners as $examinee): ?>
+                                            <tr>
+                                                <td><?php echo $examinee['default_id'] ?></td>
+                                                <td><?php echo $examinee['fullname'] ?></td>
+                                                <td><?php echo date('F j, Y - g:i A', strtotime($examinee['created_at'])); ?></td>
+                                                <td><?php echo date('F j, Y - g:i A', strtotime($examinee['updated_at'])); ?></td>
+                                                <td>
+                                                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#viewExamineeModal"
+                                                        data-default_id="<?php echo $examinee['default_id']; ?>"
+                                                        data-fullname="<?php echo $examinee['fullname']; ?>"
+                                                        data-gender="<?php echo $examinee['gender'] ?>"
+                                                        data-age="<?php echo $examinee['age'] ?>"
+                                                        data-birthday="<?php echo $examinee['birthday'] ?>"
+                                                        data-strand="<?php echo $examinee['strand'] ?>"
+                                                        data-email="<?php echo $examinee['email'] ?>"
+                                                        data-created_at="<?php echo date('F j, Y - g:i A', strtotime($examinee['created_at'])); ?>"
+                                                        data-updated_at="<?php echo date('F j, Y - g:i A', strtotime($examinee['updated_at'])); ?>">
+                                                        View Information
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach ?>
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="viewExamineeModal" tabindex="-1" role="dialog" style="display: none;">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="viewExamineeModalLabel">Examinee Information</h5>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Examiner ID:</strong> <span id="examiner_id"></span></p>
+                            <p><strong>Email:</strong> <span id="email"></span></p>
+
+                            <p><strong>Full Name:</strong> <span id="full_name"></span></p>
+                            <p><strong>Gender:</strong> <span id="gender"></span></p>
+                            <p><strong>Age:</strong> <span id="age"></span></p>
+                            <p><strong>Birthday:</strong> <span id="birthday"></span></p>
+                            <p><strong>Strand:</strong> <span id="strand"></span></p>
+
+                            <p><strong>Created At:</strong> <span id="created_at"></span></p>
+                            <p><strong>Updated At:</strong> <span id="updated_at"></span></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
@@ -221,6 +271,34 @@
 
     <!-- Demo Js -->
     <script src="js/demo.js"></script>
+
+    <!-- VIEW EXAMINEE SCRIPT -->
+    <script>
+        $('#viewExamineeModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var default_id = button.data('default_id');
+            var fullname = button.data('fullname');
+            var gender = button.data('gender');
+            var age = button.data('age');
+            var birthday = button.data('birthday');
+            var strand = button.data('strand');
+            var email = button.data('email');
+            var created_at = button.data('created_at');
+            var updated_at = button.data('updated_at');
+
+            var modal = $(this);
+            modal.find('#examiner_id').text(default_id);
+            modal.find('#full_name').text(fullname);
+            modal.find('#email').text(email);
+            modal.find('#gender').text(gender);
+            modal.find('#age').text(age);
+            modal.find('#birthday').text(birthday);
+            modal.find('#strand').text(strand);
+            modal.find('#created_at').text(created_at);
+            modal.find('#updated_at').text(updated_at);
+        });
+    </script>
+
 </body>
 
 </html>
