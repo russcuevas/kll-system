@@ -10393,7 +10393,7 @@ fieldset[disabled] .form-control {
 
 .sidebar .menu .list .ml-menu li.active a.toggled:not(.menu-toggle) {
   font-weight: 600;
-  color: #187f6b;
+  color: #7D0A0A !important;
 }
 
 .sidebar .menu .list .ml-menu li.active a.toggled:not(.menu-toggle):before {

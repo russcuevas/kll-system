@@ -9,25 +9,43 @@ $courses = $stmt_get_course->fetchAll(PDO::FETCH_ASSOC);
 // END FETCH COURSE
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Get the form data
     $question_text = $_POST['question_text'];
-    $course_ids = $_POST['course_id'];
-    $conn->beginTransaction();
+    $course_ids = $_POST['course_id']; // This will be an array of selected course IDs
 
-    $stmt = $conn->prepare("INSERT INTO tbl_questions (question_text, created_at, updated_at) VALUES (:question_text, NOW(), NOW())");
-    $stmt->bindParam(':question_text', $question_text);
-    $stmt->execute();
+    try {
+        // Begin the transaction
+        $conn->beginTransaction();
 
-    $question_id = $conn->lastInsertId();
-
-    foreach ($course_ids as $course_id) {
-        $stmt = $conn->prepare("INSERT INTO tbl_question_courses (question_id, course_id, created_at, updated_at) VALUES (:question_id, :course_id, NOW(), NOW())");
-        $stmt->bindParam(':question_id', $question_id);
-        $stmt->bindParam(':course_id', $course_id);
+        // Insert into `tbl_questions`
+        $stmt = $conn->prepare("INSERT INTO tbl_questions (question_text, created_at, updated_at) VALUES (:question_text, NOW(), NOW())");
+        $stmt->bindParam(':question_text', $question_text);
         $stmt->execute();
+
+        // Get the ID of the inserted question
+        $question_id = $conn->lastInsertId();
+
+        // Insert into `tbl_question_courses` for each selected course
+        foreach ($course_ids as $course_id) {
+            $stmt = $conn->prepare("INSERT INTO tbl_question_courses (question_id, course_id, created_at, updated_at) VALUES (:question_id, :course_id, NOW(), NOW())");
+            $stmt->bindParam(':question_id', $question_id);
+            $stmt->bindParam(':course_id', $course_id);
+            $stmt->execute();
+        }
+
+        // Commit the transaction
+        $conn->commit();
+
+        $_SESSION['success'] = "Question added successfully!";
+    } catch (Exception $e) {
+        $conn->rollBack();
+        $_SESSION['errors'] = "Error adding question: " . $e->getMessage();
+        // Log the error message for debugging
+        error_log("SQL Error: " . $e->getMessage());
     }
 
-    $conn->commit();
-    $_SESSION['success'] = "Question added successfully!";
+
+    // Redirect to avoid form resubmission
     header('Location: ' . $_SERVER['PHP_SELF']);
     exit;
 }
@@ -195,6 +213,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             </div>
             <!-- #END# Advanced Validation -->
+
+
     </section>
 
     <!-- Jquery Core Js -->

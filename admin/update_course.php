@@ -232,7 +232,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <!-- END ALERTS -->
 
                             <form action="" id="update_course_validation" method="POST" enctype="multipart/form-data">
-                                <div class="form-group form-float">
+                                <div class="form-group form-float" style="margin-top: 20px !important;">
                                     <div class="form-line">
                                         <input type="text" class="form-control" name="course_name" value="<?= htmlspecialchars($course['course_name']) ?>" required>
                                         <label class="form-label">Course Name</label>
