@@ -197,10 +197,11 @@ $courses = $stmt_get_course->fetchAll(PDO::FETCH_ASSOC);
                                                 </td>
                                                 <td><?php echo $course['course_name'] ?></td>
                                                 <td><?php echo $course['course_description'] ?></td>
-                                                <td><?php echo date('F j, Y', strtotime($course['created_at'])); ?></td>
-                                                <td><?php echo date('F j, Y', strtotime($course['updated_at'])); ?></td>
+                                                <td><?php echo date('F j, Y - g:i A', strtotime($course['created_at'])); ?></td>
+                                                <td><?php echo date('F j, Y - g:i A', strtotime($course['updated_at'])); ?></td>
+
                                                 <td>
-                                                    <a href="update_course.php?course_id=<?= $course['id'] ?>" class="btn btn-warning mb-2">Update</a>
+                                                    <a style="margin-bottom: 5px;" href="update_course.php?course_id=<?= $course['id'] ?>" class="btn btn-warning mb-2">Update</a>
                                                     <a href="javascript:void(0);" onclick="confirmDelete(<?php echo $course['id']; ?>);" class="btn btn-danger">Delete</a>
                                                 </td>
                                             </tr>

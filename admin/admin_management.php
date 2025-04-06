@@ -169,8 +169,8 @@ $admins = $stmt_get_admin->fetchAll(PDO::FETCH_ASSOC);
                                                 </td>
                                                 <td><?php echo htmlspecialchars($admin['fullname']); ?></td>
                                                 <td><?php echo htmlspecialchars($admin['email']); ?></td>
-                                                <td><?php echo date('F j, Y', strtotime($admin['created_at'])); ?></td>
-                                                <td><?php echo date('F j, Y', strtotime($admin['updated_at'])); ?></td>
+                                                <td><?php echo date('F j, Y - g:i A', strtotime($admin['created_at'])); ?></td>
+                                                <td><?php echo date('F j, Y - g:i A', strtotime($admin['updated_at'])); ?></td>
                                                 <td>
                                                     <a href="update_admin.php?id=<?php echo $admin['id']; ?>" class="btn btn-warning">Update</a>
                                                     <a href="javascript:void(0);" onclick="confirmDelete(<?php echo $admin['id']; ?>);" class="btn btn-danger">Delete</a>

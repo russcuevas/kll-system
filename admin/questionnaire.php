@@ -235,13 +235,16 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <?php $counter = 1;
+                                        ?>
                                         <?php foreach ($questions as $question): ?>
                                             <tr>
-                                                <td><?= $question['question_id'] ?></td>
+                                                <td><?= $counter++ ?></td>
                                                 <td><?= $question['question_text'] ?></td>
                                                 <td><?= $question['course_names'] ?></td>
-                                                <td><?= $question['created_at'] ?></td>
-                                                <td><?= $question['updated_at'] ?></td>
+                                                <td><?php echo date('F j, Y - g:i A', strtotime($question['created_at'])); ?></td>
+                                                <td><?php echo date('F j, Y - g:i A', strtotime($question['updated_at'])); ?></td>
+
                                                 <td>
                                                     <a href="update_question.php?id=<?= $question['question_id'] ?>" class="btn btn-warning">Update</a>
                                                     <a href="javascript:void(0);" onclick="confirmDelete(<?= $question['question_id'] ?>);" class="btn btn-danger">Delete</a>
