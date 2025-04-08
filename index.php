@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -97,20 +101,40 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="">Home</a>
-                    </li>
+                    <?php if (!isset($_SESSION['user_id']) && !isset($_SESSION['admin_id'])): ?>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="index.php">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="admin/admin_login.php">Admin Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.php">Examiners Login</a>
+                        </li>
+                    <?php endif; ?>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="admin/admin_login.php">Admin Login</a>
-                    </li>
+                    <?php if (isset($_SESSION['user_id']) && !isset($_SESSION['admin_id'])): ?>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="index.php">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="dashboard.php">My Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="logout.php">Logout</a>
+                        </li>
+                    <?php endif; ?>
 
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="login.php">Examiners Login</a>
-                    </li>
-
+                    <?php if (isset($_SESSION['admin_id'])): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="admin/index.php">Admin Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="admin/logout.php">Logout</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
+
 
             </div>
         </div>

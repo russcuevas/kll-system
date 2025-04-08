@@ -1,3 +1,46 @@
+<?php
+include 'database/connection.php';
+include 'session_login.php';
+
+$error_message = '';
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (!empty($_POST['default_id']) && !empty($_POST['password'])) {
+        $default_id = $_POST['default_id'];
+        $password = $_POST['password'];
+
+        $query = "SELECT * FROM tbl_examiners WHERE default_id = :default_id";
+        $stmt = $conn->prepare($query);
+        $stmt->bindParam(':default_id', $default_id, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 1) {
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (sha1($password) === $user['password']) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['default_id'] = $user['default_id'];
+                $_SESSION['fullname'] = $user['fullname'];
+                $_SESSION['gender'] = $user['gender'];
+                $_SESSION['age'] = $user['age'];
+                $_SESSION['birthday'] = $user['birthday'];
+                $_SESSION['strand'] = $user['strand'];
+                $_SESSION['email'] = $user['email'];
+
+                header('Location: information.php');
+                exit();
+            } else {
+                $error_message = "Invalid Student ID or password!";
+            }
+        } else {
+            $error_message = "Invalid Student ID or password!";
+        }
+    } else {
+        $error_message = "Student ID and password cannot be empty!";
+    }
+}
+?>
+
+
 <!DOCTYPE html>
 <html>
 
@@ -53,8 +96,8 @@
                                                 <h3 style="font-weight: bold;margin-bottom: 20px;">STUDENT LOGIN</h3>
                                                 <form id="loginForm" class="loginForm" method="post" class="">
                                                     <div class="form-group">
-                                                        <label for="email" class="sr-only"> Examiners ID</label>
-                                                        <input type="text" class="form-control  form-control-lg input-lg" id="student_id" name="email" placeholder="Examiners ID">
+                                                        <label for="default_id" class="sr-only"> Examiners ID</label>
+                                                        <input type="text" class="form-control  form-control-lg input-lg" id="student_id" name="default_id" placeholder="Examiners ID">
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="password" class="sr-only">Password</label>
@@ -90,6 +133,18 @@
     <script src="auth/js/bootstrap.min.js" type="text/javascript"></script>
     <script src="auth/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="ajax-auth/login.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- SweetAlert Script -->
+    <?php if (!empty($error_message)): ?>
+        <script>
+            swal({
+                title: "Error",
+                text: "<?php echo $error_message; ?>",
+                icon: "error",
+                button: "Try Again",
+            });
+        </script>
+    <?php endif; ?>
     <!-- end of global js -->
     <!-- page level js -->
     <script type="text/javascript" src="vendors/iCheck/js/icheck.js"></script>
