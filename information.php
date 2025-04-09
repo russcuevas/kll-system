@@ -18,7 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $insert_stmt->bindParam(':course_3', $course_3);
 
     if ($insert_stmt->execute()) {
-        echo "<script>alert('Your preferred courses have been successfully saved!');</script>";
+        echo "<script>window.location.href = 'assessment.php';</script>";
+        exit();
     } else {
         echo "<script>alert('Failed to save preferred courses. Please try again.');</script>";
     }
@@ -36,7 +37,6 @@ $courses = $course_stmt->fetchAll(PDO::FETCH_OBJ);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- BOOTSTRAP AND FONTS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -77,6 +77,24 @@ $courses = $course_stmt->fetchAll(PDO::FETCH_OBJ);
 </head>
 
 <body>
+
+    <!-- Page Loader -->
+    <div class="page-loader-wrapper">
+        <div class="loader">
+            <div class="preloader">
+                <div class="spinner-layer pl-green">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <p>Please wait...</p>
+        </div>
+    </div>
+    <!-- #END# Page Loader -->
 
     <div id="nav-bar" class="d-flex justify-content-center align-items-center">
         <div>
@@ -259,6 +277,72 @@ $courses = $course_stmt->fetchAll(PDO::FETCH_OBJ);
     <script src="assets/js/HoldOn.js"></script>
     <!-- WAVES EFFECTS JS -->
     <script src="assets/plugins/node-waves/waves.js"></script>
+    <script>
+        setTimeout(function() {
+            document.querySelector('.page-loader-wrapper').style.display = 'none';
+        }, 700);
+    </script>
+
+    <!-- EXAM CONFIRMATION -->
+    <script>
+        $(document).ready(function() {
+            $('form').on('submit', function(event) {
+                event.preventDefault();
+
+                const fullname = $('input[name="fullname"]').val();
+                const email = $('input[name="email"]').val();
+                const birthday = $('input[name="birthday"]').val();
+                const gender = $('input[name="gender"]').val();
+                const age = $('input[name="age"]').val();
+                const strand = $('input[name="strand"]').val();
+                const course_1 = $('select[name="course_1"]').find('option:selected').text();
+                const course_2 = $('select[name="course_2"]').find('option:selected').text();
+                const course_3 = $('select[name="course_3"]').find('option:selected').text();
+
+                const confirmationMessage = `
+                <strong>Full Name:</strong> ${fullname}<br>
+                <strong>Email:</strong> ${email}<br>
+                <strong>Birthday:</strong> ${birthday}<br>
+                <strong>Gender:</strong> ${gender}<br>
+                <strong>Age:</strong> ${age}<br>
+                <strong>Strand:</strong> ${strand}<br>
+                <strong>Preferred Courses:</strong><br>
+                1. ${course_1}<br>
+                2. ${course_2}<br>
+                3. ${course_3}
+            `;
+
+                swal({
+                    title: "Are you sure?",
+                    text: "To proceed in examination please confirm that all information is correct.",
+                    icon: "warning",
+                    html: true,
+                    buttons: {
+                        cancel: {
+                            text: "Cancel",
+                            value: null,
+                            visible: true,
+                            className: "btn btn-danger",
+                            closeModal: true
+                        },
+                        confirm: {
+                            text: "Proceed to Exam",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-primary",
+                            closeModal: true
+                        }
+                    }
+                }).then((willSubmit) => {
+                    if (willSubmit) {
+                        this.submit();
+                    }
+                });
+
+            });
+        });
+    </script>
+
 
 </body>
 
