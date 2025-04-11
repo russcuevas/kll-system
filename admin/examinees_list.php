@@ -1,6 +1,35 @@
 <?php
 include '../database/connection.php';
 include 'session_not_login.php';
+
+$query = "
+SELECT 
+    e.id,
+    e.default_id,
+    e.fullname,
+    e.gender,
+    e.age,
+    e.birthday,
+    e.strand,
+    e.created_at,
+    e.updated_at,
+    c1.course_name AS course_1_name,
+    c2.course_name AS course_2_name,
+    c3.course_name AS course_3_name
+FROM tbl_examiners e
+LEFT JOIN tbl_preferred_courses pc ON e.id = pc.user_id
+LEFT JOIN tbl_courses c1 ON pc.course_1 = c1.id
+LEFT JOIN tbl_courses c2 ON pc.course_2 = c2.id
+LEFT JOIN tbl_courses c3 ON pc.course_3 = c3.id
+WHERE pc.course_1 IS NOT NULL OR pc.course_2 IS NOT NULL OR pc.course_3 IS NOT NULL
+";
+
+$stmt = $conn->prepare($query);
+$stmt->execute();
+$students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -218,41 +247,62 @@ include 'session_not_login.php';
                             </div>
 
                             <div id="printable-area" class="table-responsive mt-3">
-                                <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Fullname</th>
-                                            <th>Sex</th>
-                                            <th>Age</th>
-                                            <th>Birthday</th>
-                                            <th>Strand</th>
-                                            <th>Preferred Course</th>
-                                            <th>Created</th>
-                                            <th>Updated</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>2420580</td>
-                                            <td>Mark Angelo Baclayo</td>
-                                            <td>Male</td>
-                                            <td>21</td>
-                                            <td>03/13/2000</td>
-                                            <td>HUMSS</td>
-                                            <td>1.) Bachelor of Science in Computer Science <br>
-                                                2.) Bachelor of Science in Nursing <br>
-                                                3.) Bachelor of Science in Criminology <br>
-                                            </td>
-                                            <td>March 13, 2025</td>
-                                            <td>March 13, 2025</td>
-                                            <td>
-                                                <a href="" class="btn btn-danger">Delete</a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div id="printable-area" class="table-responsive mt-3">
+                                    <?php if (isset($_SESSION['success'])) : ?>
+                                        <div class="alert alert-success" role="alert">
+                                            <?= $_SESSION['success']; ?>
+                                        </div>
+                                        <?php unset($_SESSION['success']);
+                                        ?>
+                                    <?php elseif (isset($_SESSION['errors'])) : ?>
+                                        <div class="alert alert-danger" role="alert">
+                                            <?= $_SESSION['errors']; ?>
+                                        </div>
+                                        <?php unset($_SESSION['errors']);
+                                        ?>
+                                    <?php endif; ?>
+                                    <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Fullname</th>
+                                                <th>Sex</th>
+                                                <th>Age</th>
+                                                <th>Birthday</th>
+                                                <th>Strand</th>
+                                                <th>Preferred Courses</th>
+                                                <th>Created</th>
+                                                <th>Updated</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($students as $student): ?>
+                                                <tr>
+                                                    <td><?= htmlspecialchars($student['default_id']) ?></td>
+                                                    <td><?= htmlspecialchars($student['fullname']) ?></td>
+                                                    <td><?= htmlspecialchars($student['gender']) ?></td>
+                                                    <td><?= htmlspecialchars($student['age']) ?></td>
+                                                    <td><?= date('m/d/Y', strtotime($student['birthday'])) ?></td>
+                                                    <td><?= htmlspecialchars($student['strand']) ?></td>
+                                                    <td>
+                                                        1.) <?= htmlspecialchars($student['course_1_name'] ?? 'N/A') ?><br>
+                                                        2.) <?= htmlspecialchars($student['course_2_name'] ?? 'N/A') ?><br>
+                                                        3.) <?= htmlspecialchars($student['course_3_name'] ?? 'N/A') ?>
+                                                    </td>
+                                                    <td><?php echo date('F j, Y - g:i A', strtotime($student['updated_at'])); ?></td>
+                                                    <td><?php echo date('F j, Y - g:i A', strtotime($student['updated_at'])); ?></td>
+                                                    <td>
+                                                        <a href="javascript:void(0);" onclick="confirmDelete(<?php echo $student['id']; ?>);" class="btn btn-danger">Delete</a>
+
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+
+                                    </table>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -316,6 +366,18 @@ include 'session_not_login.php';
                 ]
             });
         });
+    </script>
+
+    <!-- EXAMINEES CONFIRMATION DELETE -->
+    <script type="text/javascript">
+        function confirmDelete(examineesId) {
+            var confirmation = confirm("Are you sure you want to delete this ID?");
+            if (confirmation) {
+                window.location.href = "delete_id.php?id=" + examineesId;
+            } else {
+                return false;
+            }
+        }
     </script>
 
     <!-- Custom Js -->

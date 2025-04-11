@@ -91,11 +91,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                 <form id="loginForm" class="loginForm" method="post" class="">
                                                     <div class="form-group">
                                                         <label for="email" class="sr-only">Email</label>
-                                                        <input type="email" class="form-control form-control-lg input-lg" id="student_id" name="email" placeholder="Email" required>
+                                                        <input type="email" class="form-control form-control-lg input-lg" id="student_id" name="email" placeholder="Email">
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="password" class="sr-only">Password</label>
-                                                        <input type="password" class="form-control form-control-lg input-lg" id="password" name="password" placeholder="Password" required>
+                                                        <input type="password" class="form-control form-control-lg input-lg" id="password" name="password" placeholder="Password">
                                                     </div>
 
                                                     <div class="form-group">

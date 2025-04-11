@@ -74,6 +74,8 @@ VALUES (:default_id, :fullname, :gender, :age, :birthday, :strand, :email, :pass
     // Execute the prepared statement
     if ($stmt->execute()) {
         header("Location: " . $_SERVER['PHP_SELF']); // This will refresh the page
+        $_SESSION['success'] = "Examiners added successfully";
+
         exit; // Always call exit after header redirection
     } else {
         // Error message
@@ -207,6 +209,21 @@ VALUES (:default_id, :fullname, :gender, :age, :birthday, :strand, :email, :pass
                             </h2>
                         </div>
                         <div class="body">
+                            <!-- ALERTS -->
+                            <?php if (isset($_SESSION['success'])) : ?>
+                                <div class="alert alert-success" role="alert">
+                                    <?= $_SESSION['success']; ?>
+                                </div>
+                                <?php unset($_SESSION['success']);
+                                ?>
+                            <?php elseif (isset($_SESSION['errors'])) : ?>
+                                <div class="alert alert-danger" role="alert">
+                                    <?= $_SESSION['errors']; ?>
+                                </div>
+                                <?php unset($_SESSION['errors']);
+                                ?>
+                            <?php endif; ?>
+                            <!-- END ALERTS -->
                             <form id="add_default_id_validation" method="POST" action="">
                                 <div class="form-group form-float" style="margin-top: 20px !important;">
                                     <div class="form-line">

@@ -106,13 +106,13 @@ $courses = $course_stmt->fetchAll(PDO::FETCH_OBJ);
                     KOLEHIYO NG LUNGSOD NG LIPA
                 </div>
                 <div class="sub-details">
-                    Sample Location
+                    Marawoy, Lipa City, Batangas
                 </div>
                 <div class="sub-details">
-                    Sample Email
+                    kll_lipa@yahoo.com
                 </div>
                 <div class="sub-details">
-                    Sample Contact Number
+                    (043) 774 2420
                 </div>
             </div>
         </div>
