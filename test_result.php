@@ -209,7 +209,7 @@ foreach ($courses_points as $course_data) {
                                 <tbody>
                                     <?php
                                     foreach ($analytics_data as $index => $data):
-                                        $points_display = isset($data['total_points']) ? $data['total_points'] . ' point' : '0 point';
+                                        $points_display = isset($data['total_points']) ? $data['total_points'] . ' points' : '0 point';
                                     ?>
                                         <tr>
                                             <td><?php echo $index + 1; ?></td>
@@ -235,6 +235,8 @@ foreach ($courses_points as $course_data) {
                 </div>
 
                 <div id="division"></div>
+
+                <h1>Points Analytics</h1>
 
                 <!-- Donut Chart -->
                 <div style="width: 50%; height: 100vh; display: flex !important; justify-content: center !important; align-items: center !important;">
@@ -262,7 +264,7 @@ foreach ($courses_points as $course_data) {
                                     <td>
                                         <?php
                                         // If the course has points, display the points, otherwise display '0 points'
-                                        echo $course_data['total_points'] > 0 ? $course_data['total_points'] . " point" : "0 points";
+                                        echo $course_data['total_points'] > 0 ? $course_data['total_points'] . " points" : "0 point";
                                         ?>
                                     </td>
                                 </tr>
@@ -315,32 +317,40 @@ foreach ($courses_points as $course_data) {
     <script src="admin/plugins/jquery/jquery.min.js"></script>
     <script src="admin/plugins/chartjs/Chart.bundle.js"></script>
     <script>
-        // Donut chart data
-        var ctx = document.getElementById('myDonutChart').getContext('2d');
-        var myDonutChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Bachelor of Science in Computer Science', 'Bachelor of Science in Criminology', 'Bachelor of Science in Nursing'],
-                datasets: [{
-                    label: 'Course Preferences',
-                    data: [50, 30, 20],
-                    backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe'],
-                    hoverBackgroundColor: ['#ff2b3d', '#2188d6', '#9a47d9']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
-                }
-            }
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('calculate_points.php')
+                .then(response => response.json())
+                .then(data => {
+                    const labels = data.map(item => item.course_name);
+                    const points = data.map(item => parseInt(item.total_points));
+
+                    const ctx = document.getElementById('myDonutChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: points,
+                                backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffcd56', '#4bc0c0', '#ff9f40'],
+                                hoverBackgroundColor: ['#ff2b3d', '#2188d6', '#9a47d9', '#f6b800', '#34b8b8', '#ff781f']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching chart data:', error);
+                });
         });
     </script>
+
 </body>
 
 </html>

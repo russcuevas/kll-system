@@ -1,3 +1,7 @@
+<?php
+include 'database/connection.php';
+include 'session_not_login.php';
+?>
 <!DOCTYPE html>
 <html>
 
@@ -96,7 +100,8 @@
             <!-- Menu -->
             <div class="menu">
                 <ul class="list">
-                    <li class="header" style="font-size:14px !important; color: #333 !important;">Welcome <br> <label style="font-weight:700; color: #7D0A0A;">Mark Angelo Baclayo</label></li>
+                    <li class="header" style="font-size:14px !important; color: #333 !important;">Welcome <br> <label style="font-weight:700; color: #7D0A0A;"><?php echo $_SESSION['default_id']; ?> <br>
+                            <?php echo $_SESSION['fullname']; ?></label></li>
                     <li class="active">
                         <a href="dashboard.php">
                             <i class="material-icons">home</i>
@@ -135,7 +140,7 @@
                                 </div>
                             </li>
 
-                            <li onclick="Logout()" style="display: flex; align-items: center;">
+                            <li onclick="window.location.href=('logout.php');" style="display: flex; align-items: center;">
                                 <div>
                                     <label class=" mb-0 hov-pointer">
                                         <i class="material-icons mr-2" style="font-size:18px; vertical-align: middle;">exit_to_app</i>

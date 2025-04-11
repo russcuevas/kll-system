@@ -1,3 +1,102 @@
+<?php
+include 'database/connection.php';
+
+session_start();
+$user_id = $_SESSION['user_id'];
+if (!isset($user_id)) {
+    header('location: login.php');
+    exit();
+}
+
+$query_student = "SELECT fullname, gender, age, birthday, strand FROM tbl_examiners WHERE id = :user_id";
+$stmt_student = $conn->prepare($query_student);
+$stmt_student->bindParam(':user_id', $user_id);
+$stmt_student->execute();
+$student = $stmt_student->fetch(PDO::FETCH_ASSOC);
+
+$query_courses = "
+SELECT 
+    c1.course_name AS course_1_name,
+    c2.course_name AS course_2_name,
+    c3.course_name AS course_3_name
+FROM 
+    tbl_preferred_courses pc
+LEFT JOIN tbl_courses c1 ON pc.course_1 = c1.id
+LEFT JOIN tbl_courses c2 ON pc.course_2 = c2.id
+LEFT JOIN tbl_courses c3 ON pc.course_3 = c3.id
+WHERE pc.user_id = :user_id
+";
+$stmt_courses = $conn->prepare($query_courses);
+$stmt_courses->bindParam(':user_id', $user_id);
+$stmt_courses->execute();
+$preferred_courses = $stmt_courses->fetch(PDO::FETCH_ASSOC);
+
+$query = "
+SELECT 
+    q.id AS question_id,
+    q.question_text,
+    GROUP_CONCAT(DISTINCT c.course_name SEPARATOR '<br>') AS related_courses,
+    COUNT(DISTINCT CASE WHEN r.selected_option_id = 1 THEN r.id ELSE NULL END) AS total_points
+FROM 
+    tbl_questions q
+LEFT JOIN 
+    tbl_responses r ON q.id = r.question_id AND r.user_id = :user_id
+LEFT JOIN 
+    tbl_question_courses qc ON q.id = qc.question_id
+LEFT JOIN 
+    tbl_courses c ON qc.course_id = c.id
+GROUP BY 
+    q.id
+ORDER BY 
+    q.id;
+";
+
+
+
+
+$stmt = $conn->prepare($query);
+$stmt->bindParam(':user_id', $user_id);
+$stmt->execute();
+$analytics_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Calculate total points
+$total_points = 0;
+foreach ($analytics_data as $data) {
+    $total_points += $data['total_points'];  // Sum up the total points
+}
+
+$query_courses_points = "
+SELECT 
+    c.course_name,
+    SUM(CASE WHEN r.selected_option_id = 1 THEN 1 ELSE 0 END) AS total_points
+FROM 
+    tbl_courses c
+LEFT JOIN 
+    tbl_question_courses qc ON c.id = qc.course_id
+LEFT JOIN 
+    tbl_questions q ON qc.question_id = q.id
+LEFT JOIN 
+    tbl_responses r ON q.id = r.question_id AND r.user_id = :user_id
+GROUP BY 
+    c.id
+ORDER BY 
+    total_points DESC;  // Order by points in descending order
+";
+
+$stmt_courses_points = $conn->prepare($query_courses_points);
+$stmt_courses_points->bindParam(':user_id', $user_id);
+$stmt_courses_points->execute();
+$courses_points = $stmt_courses_points->fetchAll(PDO::FETCH_ASSOC);
+$suggested_courses = [];
+
+foreach ($courses_points as $course_data) {
+    if ($course_data['total_points'] > 0) {
+        $suggested_courses[] = $course_data['course_name'];
+    }
+}
+
+
+?>
 <!DOCTYPE html>
 <html>
 
@@ -222,140 +321,158 @@
 
     <section class="content">
         <div class="container-fluid">
-
-            <div class="container">
-                <div id="nav-bar" class="d-flex justify-content-center align-items-center">
-                    <div>
-                        <img class="ub-logo" style="height: 80px; width: 80px;" src="assets/images/kll-logo.jpg" alt="KLL Logo" />
-                    </div>
-                </div>
-                <div class="container-box">
-                    <a class="btn bg-red waves-effect me-2" style="float: right; margin-top: 30px;" href="">DOWNLOAD FOR PRINT</a>
-                    <h2>RESULTS</h2>
-
-                    <ul>
-                        <strong>Fullname:</strong> Mark Angelo Baclayo<br>
-                        <strong>Sex:</strong> <span style="text-transform: capitalize">Male</span><br>
-                        <strong>Age:</strong> 21<br>
-                        <strong>Birthday:</strong> March 13, 2002<br>
-                        <strong>Strand:</strong> HUMSS<br>
-                        <strong>Preferred Course:</strong><br>
-                        <span>→ Bachelor of Science in Criminology</span> <br>
-                        <span>→ Bachelor of Science in Business Administration</span> <br>
-                        <span>→ Bachelor of Science in Computer Science</span>
-                    </ul>
-
-                    <div id="division"></div>
-
-                    <h2>ASSESSTMENT SUMMARY</h2>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h3></h3>
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Questions</th>
-                                            <th>Related Course</th>
-                                            <th>Points</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>I like to work on cars</td>
-                                            <td>
-                                                Bachelor of Science in Computer Science <br>
-                                                Bachelor of Science in Business Administration <br>
-                                                Bachelor of Science in Criminology <br>
-                                            </td>
-                                            <td>1 point</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>2</td>
-                                            <td>I like to do puzzles</td>
-                                            <td>
-                                                Bachelor of Science in Computer Science <br>
-                                                Bachelor of Science in Business Administration <br>
-                                                Bachelor of Science in Criminology <br>
-                                            </td>
-                                            <td>1 point</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>3</td>
-                                            <td>I am good at working
-                                                independently</td>
-                                            <td>
-                                                Bachelor of Science in Computer Science <br>
-                                                Bachelor of Science in Business Administration <br>
-                                                Bachelor of Science in Criminology <br>
-                                            </td>
-                                            <td>1 point</td>
-                                        </tr>
-
-
-                                        <tr>
-                                            <td>4</td>
-                                            <td>I like to work in teams</td>
-                                            <td>
-                                                Bachelor of Science in Computer Science <br>
-                                                Bachelor of Science in Business Administration <br>
-                                                Bachelor of Science in Criminology <br>
-                                            </td>
-                                            <td>1 point</td>
-                                        </tr>
-
-
-                                        <tr>
-                                            <td>5</td>
-                                            <td>I am an ambitious person,
-                                                I set goals for myself</td>
-                                            <td>
-                                                Bachelor of Science in Computer Science <br>
-                                                Bachelor of Science in Business Administration <br>
-                                                Bachelor of Science in Criminology <br>
-                                            </td>
-                                            <td>1 point</td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="3" style="text-align: right;"><strong>Total Points</strong></td>
-                                            <td><strong>5 point</strong></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-                    <div style="width: 50%; height: 100vh; display: flex !important; justify-content: center !important; align-items: center !important;">
-                        <canvas id="myDonutChart" width="50" height="400"></canvas>
-                    </div>
-
-
-                    <div id="division"></div>
-
-                    <h2>Suggested Courses <br> <span style="color: brown; font-size: 20px;"><i>(the highlighted courses are related to your preferred courses)</i></span><br><br></h2>
-                    <h6 style="color: brown; font-weight: 900;">SUGGESTED COURSE</h6>
-                    <ul style="margin-bottom: 50px !important;">
-                        <li>
-                            <span style="font-weight: 900"></span>
-                            <span class="highlight">
-                                Bachelor of Science in Computer Science <br>
-                                Bachelor of Science in Criminology <br>
-                                <span style="color: black;">Bachelor of Science in Nursing</span>
-                            </span>
-                        </li>
-                    </ul>
+            <div id="nav-bar" class="d-flex justify-content-center align-items-center">
+                <div>
+                    <img class="ub-logo" style="height: 80px; width: 80px;" src="assets/images/kll-logo.jpg" alt="KLL Logo" />
                 </div>
             </div>
+            <div class="container-box">
+                <a class="btn bg-red waves-effect me-2" style="float: right; margin-top: 30px;" href="">DOWNLOAD FOR PRINT</a>
+                <h2>RESULTS</h2>
+
+                <!-- Display Student Information -->
+                <ul>
+                    <strong>Fullname:</strong> <?php echo $student['fullname']; ?><br>
+                    <strong>Sex:</strong> <?php echo $student['gender']; ?><br>
+                    <strong>Age:</strong> <?php echo $student['age']; ?><br>
+                    <strong>Birthday:</strong> <?php echo $student['birthday']; ?><br>
+                    <strong>Strand:</strong> <?php echo $student['strand']; ?><br>
+
+                    <strong>Preferred Course:</strong><br>
+                    <?php
+                    // Check if the courses exist and display them
+                    $courses = [
+                        $preferred_courses['course_1_name'],
+                        $preferred_courses['course_2_name'],
+                        $preferred_courses['course_3_name']
+                    ];
+                    foreach ($courses as $course) {
+                        if ($course) {
+                            echo "<span>→ " . $course . "</span><br>";
+                        }
+                    }
+                    ?>
+                </ul>
+
+                <div id="division"></div>
+
+                <h2>ASSESSMENT SUMMARY</h2>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Questions</th>
+                                        <th>Related Course</th>
+                                        <th>Points</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    foreach ($analytics_data as $index => $data):
+                                        $points_display = isset($data['total_points']) ? $data['total_points'] . ' point' : '0 point';
+                                    ?>
+                                        <tr>
+                                            <td><?php echo $index + 1; ?></td>
+                                            <td><?php echo $data['question_text']; ?></td>
+                                            <td><?php echo $data['related_courses']; ?></td>
+                                            <td>
+                                                <?php echo $points_display; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" style="text-align: right;"><strong>Total Points</strong></td>
+                                        <td><strong><?php echo $total_points; ?> point<?php echo $total_points > 1 ? 's' : ''; ?></strong></td>
+                                    </tr>
+                                </tfoot>
+
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div id="division"></div>
+
+                <!-- Donut Chart -->
+                <div style="width: 50%; height: 100vh; display: flex !important; justify-content: center !important; align-items: center !important;">
+                    <canvas id="myDonutChart" width="50" height="400"></canvas>
+                </div>
+
+                <div id="division"></div>
+
+
+                <!-- COURSE SUMMARY POINTS -->
+                <div>
+                    <h1>Course Summary Points</h1>
+                    <p>Each course is displayed below with its total points based on your responses:</p>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Total Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($courses_points as $course_data): ?>
+                                <tr>
+                                    <td><?php echo $course_data['course_name']; ?></td>
+                                    <td>
+                                        <?php
+                                        // If the course has points, display the points, otherwise display '0 points'
+                                        echo $course_data['total_points'] > 0 ? $course_data['total_points'] . " point" : "0 points";
+                                        ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div id="division"></div>
+
+                <h2>Suggested Courses <br> <span style="color: brown; font-size: 20px;"><i>(the red highlighted courses are related to your preferred courses)</i></span><br><br></h2>
+                <h6 style="color: brown; font-weight: 900;">SUGGESTED COURSE</h6>
+                <ul style="margin-bottom: 50px !important;">
+                    <?php
+                    // Create an array of preferred courses to compare
+                    $preferred_courses_array = [
+                        $preferred_courses['course_1_name'],
+                        $preferred_courses['course_2_name'],
+                        $preferred_courses['course_3_name']
+                    ];
+
+                    foreach ($suggested_courses as $course):
+                        // Find the total points for the current course
+                        $course_points = 0;
+                        foreach ($courses_points as $course_data) {
+                            if ($course_data['course_name'] == $course) {
+                                $course_points = $course_data['total_points'];
+                                break;
+                            }
+                        }
+
+                        // Check if the suggested course is one of the preferred courses
+                        if (in_array($course, $preferred_courses_array)) {
+                            // Highlight in red if it's related to a preferred course
+                            echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                        } else {
+                            // Display in black if it's not related to the preferred course
+                            echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                        }
+                    endforeach;
+                    ?>
+                </ul>
+
+            </div>
+        </div>
     </section>
 
     <!-- Jquery Core Js -->

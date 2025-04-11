@@ -1,37 +1,25 @@
 <?php
-include 'database/connection.php'; // Include the database connection
-include 'session_not_login.php'; // Include session handling (for logged-in users)
+include 'database/connection.php';
+include 'session_not_login.php';
 
-// Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Iterate over the answers provided by the user
     foreach ($_POST['answer'] as $question_id => $selected_option) {
-        // The value of $selected_option will be either '1' or '0' based on the user's selection
-        // No need to calculate points manually if your database stores correct answers and points are handled elsewhere
-
-        // Get the user_id from session (ensure you have logged-in user details)
         $user_id = $_SESSION['user_id'];
 
-        // Insert response into the database
         $insert_query = "INSERT INTO tbl_responses (user_id, question_id, selected_option_id, points) 
                          VALUES (:user_id, :question_id, :selected_option, :points)";
         $insert_stmt = $conn->prepare($insert_query);
 
-        // Calculate points (assuming '1' is correct and '0' is incorrect)
-        $points = ($selected_option == 1) ? 1 : 0; // Assign 1 point if 'True', 0 if 'False'
+        $points = ($selected_option == 1) ? 1 : 0;
 
-        // Bind parameters
         $insert_stmt->bindParam(':user_id', $user_id);
         $insert_stmt->bindParam(':question_id', $question_id);
         $insert_stmt->bindParam(':selected_option', $selected_option);
         $insert_stmt->bindParam(':points', $points);
 
-        // Execute the query
         if ($insert_stmt->execute()) {
-            // Success
             echo "Response submitted successfully!";
         } else {
-            // Failure
             echo "Failed to submit the response!";
         }
     }
@@ -117,12 +105,12 @@ $question = $question_stmt->fetchAll(PDO::FETCH_OBJ);
     <div id="nav-body" class="d-flex justify-content-center" style="margin-bottom:50px;">
         <div id="form-container" class="row">
             <div class="info-container" style="margin-top: 50px">
-                <div class="info-item">Default ID: <span style="color: brown">2420580</span></div>
-                <div class="info-item">Age: 21</div>
+                <div class="info-item">Default ID: <span style="color: brown"><?php echo $_SESSION['default_id']; ?></span></div>
+                <div class="info-item">Age: <?php echo $_SESSION['age']; ?></div>
             </div>
             <div class="info-container">
-                <div class="info-item">Name: Mark Angelo Baclayo</div>
-                <div class="info-item">Strand: HUMSS</div>
+                <div class="info-item">Name: <?php echo $_SESSION['fullname']; ?></div>
+                <div class="info-item">Strand: <?php echo $_SESSION['strand']; ?></div>
             </div>
 
             <h2 style="text-align: center" class="mt-5"></h2>
