@@ -2,6 +2,17 @@
 include '../database/connection.php';
 include 'session_not_login.php';
 
+$filterMonth = isset($_GET['month']) ? $_GET['month'] : '';
+$filterYear = isset($_GET['year']) ? $_GET['year'] : '';
+
+$where = "WHERE (pc.course_1 IS NOT NULL OR pc.course_2 IS NOT NULL OR pc.course_3 IS NOT NULL)";
+if (!empty($filterMonth)) {
+    $where .= " AND MONTH(e.created_at) = :month";
+}
+if (!empty($filterYear)) {
+    $where .= " AND YEAR(e.created_at) = :year";
+}
+
 $query = "
 SELECT 
     e.id,
@@ -21,10 +32,18 @@ LEFT JOIN tbl_preferred_courses pc ON e.id = pc.user_id
 LEFT JOIN tbl_courses c1 ON pc.course_1 = c1.id
 LEFT JOIN tbl_courses c2 ON pc.course_2 = c2.id
 LEFT JOIN tbl_courses c3 ON pc.course_3 = c3.id
-WHERE pc.course_1 IS NOT NULL OR pc.course_2 IS NOT NULL OR pc.course_3 IS NOT NULL
+$where
 ";
 
 $stmt = $conn->prepare($query);
+
+if (!empty($filterMonth)) {
+    $stmt->bindParam(':month', $filterMonth, PDO::PARAM_INT);
+}
+if (!empty($filterYear)) {
+    $stmt->bindParam(':year', $filterYear, PDO::PARAM_INT);
+}
+
 $stmt->execute();
 $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -212,35 +231,72 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     List of Examinees
                                 </h2>
                                 <div id="print-container">
-                                    <form id="printExamineesForm" style="display:inline;">
-                                        <button type="submit" class="btn bg-red waves-effect btn-sm">
-                                            <i class="material-icons">print</i>
-                                            <span>Download for Print</span>
-                                        </button>
-                                    </form>
+                                    <?php
+                                    $monthQuery = isset($_GET['month']) ? $_GET['month'] : '';
+                                    $yearQuery = isset($_GET['year']) ? $_GET['year'] : '';
+                                    $printUrl = "print/examinees_list.php?month=$monthQuery&year=$yearQuery";
+                                    ?>
+
+                                    <a href="<?= $printUrl ?>" target="_blank" class="btn bg-red waves-effect btn-sm">
+                                        <i class="material-icons">print</i>
+                                        <span>CLICK TO PRINT</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
+                        <?php
+                        $currentMonth = isset($_GET['month']) ? $_GET['month'] : '';
+                        $currentYear = isset($_GET['year']) ? $_GET['year'] : '';
+                        ?>
                         <div class="body">
                             <div class="row mb-3">
                                 <div class="form-group">
                                     <form action="" method="GET">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <div class="col-lg-2 col-md-4 col-sm-12 col-xs-12">
+                                            <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 mb-2">
                                                 <select class="form-control select-form" id="month" name="month">
                                                     <option value="">All months</option>
+                                                    <?php
+                                                    for ($m = 1; $m <= 12; $m++) {
+                                                        $monthValue = str_pad($m, 2, '0', STR_PAD_LEFT);
+                                                        $selected = ($monthValue == $currentMonth) ? 'selected' : '';
+                                                        echo "<option value=\"$monthValue\" $selected>" . date('F', mktime(0, 0, 0, $m, 1)) . "</option>";
+                                                    }
+                                                    ?>
                                                 </select>
                                             </div>
-                                            <div class="col-lg-2 col-md-4 col-sm-12 col-xs-12">
-                                                <select class="form-control select-form select-form-lg" id="year" name="year">
+
+                                            <!-- Year Dropdown -->
+                                            <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 mb-2">
+                                                <select class="form-control select-form" id="year" name="year">
                                                     <option value="">All years</option>
+                                                    <?php
+                                                    for ($y = 2025; $y <= 2050; $y++) {
+                                                        $selected = ($y == $currentYear) ? 'selected' : '';
+                                                        echo "<option value=\"$y\" $selected>$y</option>";
+                                                    }
+                                                    ?>
                                                 </select>
                                             </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <button type="submit" class="btn bg-red waves-effect btn-sm filter-button">
-                                                    <i class="material-icons">filter_list</i> <span class="filter-span">FILTER</span>
-                                                </button>
+
+                                            <!-- Buttons -->
+                                            <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 mb-2">
+                                                <div class="d-flex justify-content-start" style="gap: 10px;">
+                                                    <!-- FILTER Button -->
+                                                    <button type="submit" class="btn bg-red waves-effect btn-sm">
+                                                        <i class="material-icons">filter_list</i>
+                                                        <span class="filter-span">FILTER</span>
+                                                    </button>
+
+                                                    <!-- RESET Button -->
+                                                    <a href="examinees_list.php" class="btn bg-grey waves-effect btn-sm">
+                                                        <i class="material-icons">restart_alt</i>
+                                                        <span class="filter-span">RESET</span>
+                                                    </a>
+                                                </div>
                                             </div>
+
+
                                         </div>
                                     </form>
                                 </div>
