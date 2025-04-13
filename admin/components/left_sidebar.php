@@ -49,13 +49,13 @@
                     </li>
                 </ul>
             </li>
-
-            <li class="<?php echo (basename($_SERVER['PHP_SELF']) == 'exam_results.php') ? 'active' : ''; ?>">
+            <li class="<?php echo (basename($_SERVER['PHP_SELF']) == 'exam_results.php' || basename($_SERVER['PHP_SELF']) == 'view_results.php') ? 'active' : ''; ?>">
                 <a href="exam_results.php">
                     <i class="material-icons">done_all</i>
                     <span>Exam Results</span>
                 </a>
             </li>
+
         </ul>
     </div>
     <!-- #Menu -->
