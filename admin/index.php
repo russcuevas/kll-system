@@ -2,6 +2,37 @@
 include '../database/connection.php';
 include 'session_not_login.php';
 
+// GET THE ADMIN
+$get_admin_total = "SELECT COUNT(*) AS admin_total FROM `tbl_admin`";
+$stmt_admin_total = $conn->prepare($get_admin_total);
+$stmt_admin_total->execute();
+$result_admin_total = $stmt_admin_total->fetch(PDO::FETCH_ASSOC);
+$admin_total = $result_admin_total['admin_total'];
+// END GET TOTAL ADMIN
+
+
+// GET THE EXAMINEES
+$get_examinees_list = "SELECT COUNT(*) AS examinees_list FROM `tbl_examiners`";
+$stmt_examinees_list = $conn->prepare($get_examinees_list);
+$stmt_examinees_list->execute();
+$result_examinees_list = $stmt_examinees_list->fetch(PDO::FETCH_ASSOC);
+$examinees_list = $result_examinees_list['examinees_list'];
+// END GET TOTAL ADMIN
+
+// GET THE COURSE
+$get_available_course = "SELECT COUNT(*) AS available_course FROM `tbl_courses`";
+$stmt_available_course = $conn->prepare($get_available_course);
+$stmt_available_course->execute();
+$result_available_course = $stmt_available_course->fetch(PDO::FETCH_ASSOC);
+$available_course = $result_available_course['available_course'];
+// END GET TOTAL COURSE
+
+
+//FETCH COURSE
+$get_course = "SELECT * FROM `tbl_courses`";
+$get_stmt = $conn->query($get_course);
+$courses = $get_stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -199,36 +230,36 @@ include 'session_not_login.php';
 
             <!-- Widgets -->
             <div class="row clearfix">
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-                    <div class="info-box bg-red hover-expand-effect" style="background-color: #7D0A0A !important;">
+                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12" onclick="window.location.href='admin_management.php';">
+                    <div class="info-box bg-red hover-expand-effect" style="background-color: #7D0A0A !important; cursor: pointer;">
                         <div class="icon">
                             <i class="material-icons">admin_panel_settings</i>
                         </div>
                         <div class="content">
                             <div class="text" style="color: white !important;">TOTAL ADMIN</div>
-                            <div class="" style="font-size: 20px; color: white !important">10</div>
+                            <div class="" style="font-size: 20px; color: white !important"><?php echo $admin_total ?></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-                    <div class="info-box bg-red hover-expand-effect" style="background-color: #7D0A0A !important;">
+                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12" onclick="window.location.href='add_examiners.php';">
+                    <div class="info-box bg-red hover-expand-effect" style="background-color: #7D0A0A !important; cursor: pointer;">
                         <div class="icon">
                             <i class="material-icons">groups</i>
                         </div>
                         <div class="content">
                             <div class="text" style="color: white !important;">TOTAL EXAMINEES</div>
-                            <div class="" style="font-size: 20px; color: white !important">10</div>
+                            <div class="" style="font-size: 20px; color: white !important"><?php echo $examinees_list ?></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-                    <div class="info-box bg-red hover-expand-effect" style="background-color: #7D0A0A !important;">
+                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12" onclick="window.location.href='course.php';">
+                    <div class="info-box bg-red hover-expand-effect" style="background-color: #7D0A0A !important; cursor: pointer;">
                         <div class="icon">
                             <i class="material-icons">done_all</i>
                         </div>
                         <div class="content">
                             <div class="text" style="color: white !important;">TOTAL COURSE</div>
-                            <div class="" style="font-size: 20px; color: white !important">10</div>
+                            <div class="" style="font-size: 20px; color: white !important"><?php echo $available_course ?></div>
                         </div>
                     </div>
                 </div>
@@ -307,28 +338,15 @@ include 'session_not_login.php';
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td>Bachelor of Science in Computer Science</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td>Bachelor of Science in Nursing</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>3</td>
-                                                    <td>Bachelor of Science in Criminology</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>4</td>
-                                                    <td>Bachelor of Science in Education</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>5</td>
-                                                    <td>Bachelor of Science in Business Administration</td>
-                                                </tr>
-
+                                                <?php $i = 1;
+                                                foreach ($courses as $course) : ?>
+                                                    <tr>
+                                                        <td><?= $i++; ?></td>
+                                                        <td><?= htmlspecialchars($course['course_name']); ?></td>
+                                                    </tr>
+                                                <?php endforeach; ?>
                                             </tbody>
+
                                         </table>
                                     </div>
                                 </div>
