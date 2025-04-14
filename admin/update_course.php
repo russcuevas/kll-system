@@ -41,14 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if (isset($_FILES['course_picture']) && !empty($_FILES['course_picture']['name'][0])) {
             foreach ($image_names as $image) {
-                $image_path = "profile/courses/" . $image;
+                $image_path = "../public/courses/" . $image;
                 if (file_exists($image_path)) {
                     unlink($image_path);
                 }
             }
 
             $new_image_names = [];
-            $target_dir = "profile/courses/";
+            $target_dir = "../public/courses/";
             $images = $_FILES['course_picture'];
 
             foreach ($images['name'] as $key => $image_name) {
@@ -257,7 +257,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         $images = json_decode($course['course_picture'], true);
                                         if (is_array($images)) {
                                             foreach ($images as $image) {
-                                                echo "<img src='profile/courses/$image' style='width:100px;height:100px;margin-right:10px;'>";
+                                                echo "<img src='../public/courses/$image' style='width:100px;height:100px;margin-right:10px;'>";
                                             }
                                         }
                                         ?>

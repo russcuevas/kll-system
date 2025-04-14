@@ -13,7 +13,7 @@ if (isset($_GET['id'])) {
     if ($course) {
         $images = json_decode($course['course_picture'], true);
         if (!empty($images)) {
-            $target_dir = "profile/courses/";
+            $target_dir = "../public/courses/";
             foreach ($images as $image) {
                 $image_path = $target_dir . $image;
                 if (file_exists($image_path)) {

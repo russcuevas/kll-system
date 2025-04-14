@@ -1,6 +1,13 @@
 <?php
 session_start();
+include 'database/connection.php';
+
+// FETCH COURSES
+$get_course = "SELECT * FROM tbl_courses";
+$stmt = $conn->query($get_course);
+$courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -103,6 +110,9 @@ session_start();
                 <ul class="navbar-nav ms-auto">
                     <?php if (!isset($_SESSION['user_id']) && !isset($_SESSION['admin_id'])): ?>
                         <li class="nav-item">
+                            <a class="nav-link" href="home.php">Overview</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link active" href="index.php">Home</a>
                         </li>
                         <li class="nav-item">
@@ -150,44 +160,32 @@ session_start();
     <div class="container">
         <h3 class="mt-5">OFFERED COURSE</h3>
         <div class="row">
-            <div class="col-12 col-sm-6 col-md-4 mb-4 d-flex align-items-stretch">
-                <div class="course-card d-flex flex-column">
-                    <div class="slick-container">
-                        <img style="height: 300px" src="https://images.ctfassets.net/wp1lcwdav1p1/7JwZNrzXiFWPAkdcenHTRN/debb648bfa04176d87ae8702bf6607f8/GettyImages-1280720394.jpg?w=1500&h=680&q=60&fit=fill&f=faces&fm=jpg&fl=progressive" alt="">
-                    </div>
-                    <h2>Bachelor of Science in Computer Science</h2>
-                    <p>A bachelor's degree in computer science is a four-year undergraduate program that covers both theoretical and practical aspects of designing, developing, and testing software.</p>
-                    <div class="mt-auto">
-                        <a href="" class="btn btn-primary learn-btn">Learn More</a>
-                    </div>
-                </div>
-            </div>
+            <?php foreach ($courses as $course): ?>
+                <div class="col-12 col-sm-6 col-md-4 mb-4 d-flex align-items-stretch">
+                    <div class="course-card d-flex flex-column">
+                        <div class="slick-container">
+                            <!-- Default image if none is in DB -->
+                            <?php
+                            $images = json_decode($course['course_picture'], true);
+                            ?>
 
-            <div class="col-12 col-sm-6 col-md-4 mb-4 d-flex align-items-stretch">
-                <div class="course-card d-flex flex-column">
-                    <div class="slick-container">
-                        <img style="height: 300px" src="https://evlumogdang23.wordpress.com/wp-content/uploads/2013/02/0.jpeg" alt="">
-                    </div>
-                    <h2>Bachelor of Science in Criminology</h2>
-                    <p>BSCRIM stands for Bachelor of Science in Criminology. It's a degree program that focuses on the study of crime, criminal behavior, and the justice system.</p>
-                    <div class="mt-auto">
-                        <a href="" class="btn btn-primary learn-btn">Learn More</a>
+                            <?php if (!empty($images) && is_array($images)): ?>
+                                <?php foreach ($images as $image): ?>
+                                    <img style="height: 300px" src="public/courses/<?= htmlspecialchars($image) ?>" alt="<?= htmlspecialchars($course['course_name']) ?>">
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <img style="height: 300px" src="assets/images/default-course.jpg" alt="Default Image">
+                            <?php endif; ?>
+                        </div>
+                        <h2><?= htmlspecialchars($course['course_name']) ?></h2>
+                        <p><?= htmlspecialchars($course['course_description'] ?? 'No description available.') ?></p>
+                        <div class="mt-auto">
+                            <a href="view_course.php?id=<?= $course['id'] ?>" class="btn btn-primary learn-btn">Learn More</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            <?php endforeach; ?>
 
-            <div class="col-12 col-sm-6 col-md-4 mb-4 d-flex align-items-stretch">
-                <div class="course-card d-flex flex-column">
-                    <div class="slick-container">
-                        <img style="height: 300px" src="https://149747948.v2.pressablecdn.com/wp-content/uploads/GPS_Blog-BSN-BS.jpg" alt="">
-                    </div>
-                    <h2>Bachelor of Science in Nursing</h2>
-                    <p>Bachelor of Science in Nursing (BSN) is a four-year program consisting of general education, major and professional nursing courses.</p>
-                    <div class="mt-auto">
-                        <a href="" class="btn btn-primary learn-btn">Learn More</a>
-                    </div>
-                </div>
-            </div>
             <div class="d-flex justify-content-center">
             </div>
         </div>

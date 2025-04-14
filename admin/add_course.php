@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Handle the file uploads
         if (isset($_FILES['course_picture']) && !empty($_FILES['course_picture']['name'][0])) {
-            $target_dir = "profile/courses/"; // Folder where images will be uploaded
+            $target_dir = "../public/courses/"; // Updated path
             $images = $_FILES['course_picture'];
 
             foreach ($images['name'] as $key => $image_name) {

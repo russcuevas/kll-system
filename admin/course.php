@@ -187,7 +187,7 @@ $courses = $stmt_get_course->fetchAll(PDO::FETCH_ASSOC);
 
                                                         // Loop through each image and display it
                                                         foreach ($images as $image) {
-                                                            $image_path = "profile/courses/" . $image; // Adjust path as necessary
+                                                            $image_path = "../public/courses/" . $image; // Adjust path as necessary
                                                             echo '<img src="' . $image_path . '" alt="Course Image" style="height: 70px; width: 150px; margin-right: 10px;">';
                                                         }
 
