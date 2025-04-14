@@ -4,7 +4,6 @@ include 'session_not_login.php';
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Sanitize input values
     $fullname = htmlspecialchars(trim($_POST['fullname']));
     $email = htmlspecialchars(trim($_POST['email']));
     $password = htmlspecialchars(trim($_POST['password']));
@@ -12,19 +11,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $hashed_password = sha1($password);
 
-    // Check if the email already exists
     $stmt = $conn->prepare("SELECT COUNT(*) FROM tbl_admin WHERE email = :email");
     $stmt->bindParam(':email', $email);
     $stmt->execute();
 
-    // Email validation
     if ($stmt->fetchColumn() > 0) {
         $_SESSION['errors'] = "The email address is already in use. Please choose another one.";
-        header("Location: add_admin.php");  // Redirect to display error
+        header("Location: add_admin.php");
         exit;
     }
 
-    // Process image upload
     $profile_picture = null;
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == 0) {
         $file_tmp = $_FILES['profile_picture']['tmp_name'];
@@ -42,12 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $new_file_name = uniqid() . '.' . $file_ext;
         $file_path = $target_dir . $new_file_name;
 
-        // Create directory if it doesn't exist
         if (!is_dir($target_dir)) {
             mkdir($target_dir, 0777, true);
         }
 
-        // Move the uploaded file to the directory
         if (move_uploaded_file($file_tmp, $file_path)) {
             $profile_picture = $new_file_name;
         } else {
@@ -57,19 +51,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // Insert the new admin data into the database
     $query = "INSERT INTO tbl_admin (fullname, email, password, contact_number, profile_picture) 
               VALUES (:fullname, :email, :password, :contact_number, :profile_picture)";
     $stmt = $conn->prepare($query);
 
-    // Bind parameters to the query
     $stmt->bindParam(':fullname', $fullname);
     $stmt->bindParam(':email', $email);
     $stmt->bindParam(':password', $hashed_password);
     $stmt->bindParam(':contact_number', $contact_number);
     $stmt->bindParam(':profile_picture', $profile_picture);
 
-    // Execute the query
     if ($stmt->execute()) {
         $_SESSION['success'] = "Admin added successfully!";
     } else {

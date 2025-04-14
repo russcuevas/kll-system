@@ -35,20 +35,33 @@
                 </ul>
             </li>
 
-            <li class="<?php echo (basename($_SERVER['PHP_SELF']) == 'course.php' || basename($_SERVER['PHP_SELF']) == 'questionnaire.php' || basename($_SERVER['PHP_SELF']) == 'add_course.php' || basename($_SERVER['PHP_SELF']) == 'update_course.php' || basename($_SERVER['PHP_SELF']) == 'add_questionnaire.php' || basename($_SERVER['PHP_SELF']) == 'update_questionnaire.php') ? 'active' : ''; ?>">
+            <li class="<?php echo (
+                            basename($_SERVER['PHP_SELF']) == 'course.php' ||
+                            basename($_SERVER['PHP_SELF']) == 'questionnaire.php' ||
+                            basename($_SERVER['PHP_SELF']) == 'add_course.php' ||
+                            basename($_SERVER['PHP_SELF']) == 'update_course.php' ||
+                            basename($_SERVER['PHP_SELF']) == 'add_questionnaire.php' ||
+                            basename($_SERVER['PHP_SELF']) == 'update_questionnaire.php' ||
+                            basename($_SERVER['PHP_SELF']) == 'update_question.php'
+                        ) ? 'active' : ''; ?>">
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="material-icons">description</i>
                     <span>Assessment</span>
                 </a>
                 <ul class="ml-menu">
-                    <li class="<?php echo (in_array(basename($_SERVER['PHP_SELF']), ['course.php', 'add_course.php', 'update_course.php'])) ? 'active' : ''; ?>">
+                    <li class="<?php echo (
+                                    in_array(basename($_SERVER['PHP_SELF']), ['course.php', 'add_course.php', 'update_course.php'])
+                                ) ? 'active' : ''; ?>">
                         <a href="course.php">Course</a>
                     </li>
-                    <li class="<?php echo (basename($_SERVER['PHP_SELF']) == 'questionnaire.php' || basename($_SERVER['PHP_SELF']) == 'add_questionnaire.php' || basename($_SERVER['PHP_SELF']) == 'update_question.php') ? 'active' : ''; ?>">
+                    <li class="<?php echo (
+                                    in_array(basename($_SERVER['PHP_SELF']), ['questionnaire.php', 'add_questionnaire.php', 'update_question.php']) // <-- Also updated this line
+                                ) ? 'active' : ''; ?>">
                         <a href="questionnaire.php">Questionnaire</a>
                     </li>
                 </ul>
             </li>
+
             <li class="<?php echo (basename($_SERVER['PHP_SELF']) == 'exam_results.php' || basename($_SERVER['PHP_SELF']) == 'view_results.php') ? 'active' : ''; ?>">
                 <a href="exam_results.php">
                     <i class="material-icons">done_all</i>
