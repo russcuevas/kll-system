@@ -65,7 +65,7 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
             margin-right: 20px;
         }
 
-        .ub-logo {
+        .kll-logo {
             width: 80px;
             height: auto;
         }
@@ -131,7 +131,7 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- NAV HEADER -->
     <div id="nav-bar">
         <div class="logo-section">
-            <img class="ub-logo" src="../../assets/images/kll-logo.jpg" alt="KLL Logo" />
+            <img class="kll-logo" src="../../assets/images/kll-logo.jpg" alt="KLL Logo" />
         </div>
         <div class="info-section">
             <div id="school-name">KOLEHIYO NG LUNGSOD NG LIPA</div>

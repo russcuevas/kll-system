@@ -196,12 +196,10 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     List of Questions
                                 </h2>
                                 <div id="print-container">
-                                    <form id="printExamineesForm" style="display:inline;">
-                                        <button type="submit" class="btn bg-red waves-effect btn-sm">
-                                            <i class="material-icons">print</i>
-                                            <span>Download for Print</span>
-                                        </button>
-                                    </form>
+                                    <a href="print/questionnaire.php" target="_blank" class="btn bg-red waves-effect btn-sm">
+                                        <i class="material-icons">print</i>
+                                        <span>CLICK TO PRINT</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>

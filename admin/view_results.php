@@ -179,7 +179,21 @@ $exam_date = $date_result['exam_date'] ? date('F d, Y h:i A', strtotime($date_re
 
 <body class="theme-red">
     <!-- Page Loader -->
-
+    <div class="page-loader-wrapper">
+        <div class="loader">
+            <div class="preloader">
+                <div class="spinner-layer pl-green">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <p>Please wait...</p>
+        </div>
+    </div>
     <!-- #END# Page Loader -->
 
     <!-- Overlay For Sidebars -->
