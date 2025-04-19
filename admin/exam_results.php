@@ -2,6 +2,11 @@
 include '../database/connection.php';
 include 'session_not_login.php';
 
+// Get the selected month and year from the GET request
+$selectedMonth = isset($_GET['month']) ? $_GET['month'] : '';
+$selectedYear = isset($_GET['year']) ? $_GET['year'] : '';
+
+// Base query
 $query_students = "
 SELECT DISTINCT
     e.id,
@@ -33,8 +38,30 @@ LEFT JOIN
     tbl_courses c3 ON pc.course_3 = c3.id
 ";
 
+// Apply filters based on month and year if they are selected
+$whereConditions = [];
+if ($selectedMonth) {
+    $whereConditions[] = "MONTH(e.created_at) = :month";
+}
+if ($selectedYear) {
+    $whereConditions[] = "YEAR(e.created_at) = :year";
+}
 
+if (!empty($whereConditions)) {
+    $query_students .= " WHERE " . implode(' AND ', $whereConditions);
+}
+
+// Prepare and execute the query
 $stmt = $conn->prepare($query_students);
+
+// Bind parameters if filters are applied
+if ($selectedMonth) {
+    $stmt->bindParam(':month', $selectedMonth, PDO::PARAM_INT);
+}
+if ($selectedYear) {
+    $stmt->bindParam(':year', $selectedYear, PDO::PARAM_INT);
+}
+
 $stmt->execute();
 $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -234,23 +261,52 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <div class="form-group">
                                     <form action="" method="GET">
                                         <div class="d-flex justify-content-between align-items-center">
+                                            <!-- Month Dropdown -->
                                             <div class="col-lg-2 col-md-4 col-sm-12 col-xs-12">
                                                 <select class="form-control select-form" id="month" name="month">
                                                     <option value="">All months</option>
+                                                    <?php
+                                                    for ($m = 1; $m <= 12; $m++) {
+                                                        $monthValue = str_pad($m, 2, '0', STR_PAD_LEFT);
+                                                        $selected = (isset($_GET['month']) && $_GET['month'] == $monthValue) ? 'selected' : '';
+                                                        echo "<option value=\"$monthValue\" $selected>" . date('F', mktime(0, 0, 0, $m, 1)) . "</option>";
+                                                    }
+                                                    ?>
                                                 </select>
                                             </div>
+
+                                            <!-- Year Dropdown -->
                                             <div class="col-lg-2 col-md-4 col-sm-12 col-xs-12">
                                                 <select class="form-control select-form select-form-lg" id="year" name="year">
                                                     <option value="">All years</option>
+                                                    <?php
+                                                    for ($y = 2025; $y <= 2050; $y++) {
+                                                        $selected = (isset($_GET['year']) && $_GET['year'] == $y) ? 'selected' : '';
+                                                        echo "<option value=\"$y\" $selected>$y</option>";
+                                                    }
+                                                    ?>
                                                 </select>
                                             </div>
-                                            <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                                <button type="submit" class="btn bg-red waves-effect btn-sm filter-button">
-                                                    <i class="material-icons">filter_list</i> <span class="filter-span">FILTER</span>
-                                                </button>
+
+                                            <!-- Buttons -->
+                                            <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 mb-2">
+                                                <div class="d-flex justify-content-start" style="gap: 10px;">
+                                                    <!-- FILTER Button -->
+                                                    <button type="submit" class="btn bg-red waves-effect btn-sm">
+                                                        <i class="material-icons">filter_list</i>
+                                                        <span class="filter-span">FILTER</span>
+                                                    </button>
+
+                                                    <!-- RESET Button -->
+                                                    <a href="exam_results.php" class="btn bg-grey waves-effect btn-sm">
+                                                        <i class="material-icons">restart_alt</i>
+                                                        <span class="filter-span">RESET</span>
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
+
                                 </div>
                             </div>
 
