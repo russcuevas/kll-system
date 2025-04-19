@@ -195,11 +195,15 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <h2 class="m-0" style="font-size: 25px; font-weight: 900; color: #7D0A0A;">
                                     List of Questions
                                 </h2>
+
+
                                 <div id="print-container">
-                                    <a href="print/questionnaire.php" target="_blank" class="btn bg-red waves-effect btn-sm">
-                                        <i class="material-icons">print</i>
-                                        <span>CLICK TO PRINT</span>
-                                    </a>
+                                    <?php if (!empty($questions)): ?>
+                                        <a href="print/questionnaire.php" target="_blank" class="btn bg-red waves-effect btn-sm">
+                                            <i class="material-icons">print</i>
+                                            <span>CLICK TO PRINT</span>
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

@@ -237,10 +237,12 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     $printUrl = "print/examinees_list.php?month=$monthQuery&year=$yearQuery";
                                     ?>
 
-                                    <a href="<?= $printUrl ?>" target="_blank" class="btn bg-red waves-effect btn-sm">
-                                        <i class="material-icons">print</i>
-                                        <span>CLICK TO PRINT</span>
-                                    </a>
+                                    <?php if (!empty($students)): ?>
+                                        <a href="<?= $printUrl ?>" target="_blank" class="btn bg-red waves-effect btn-sm">
+                                            <i class="material-icons">print</i>
+                                            <span>CLICK TO PRINT</span>
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

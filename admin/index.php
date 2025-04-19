@@ -224,6 +224,21 @@ $courses = $get_stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <section class="content">
         <div class="container-fluid">
+            <!-- ALERTS -->
+            <?php if (isset($_SESSION['success'])) : ?>
+                <div class="alert alert-success" role="alert">
+                    <?= $_SESSION['success']; ?>
+                </div>
+                <?php unset($_SESSION['success']);
+                ?>
+            <?php elseif (isset($_SESSION['errors'])) : ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= $_SESSION['errors']; ?>
+                </div>
+                <?php unset($_SESSION['errors']);
+                ?>
+            <?php endif; ?>
+            <!-- END ALERTS -->
             <div class="block-header">
                 <h2 style="font-size: 25px; font-weight: 900; color: #7D0A0A !important;">DATA ANALYTICS</h2>
             </div>
