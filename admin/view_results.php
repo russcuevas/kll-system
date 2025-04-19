@@ -246,7 +246,7 @@ $exam_date = $date_result['exam_date'] ? date('F d, Y h:i A', strtotime($date_re
                 </div>
             </div>
             <div class="container-box">
-                <a class="btn bg-red waves-effect me-2" style="float: right; margin-top: 30px;" href="">DOWNLOAD FOR PRINT</a>
+                <a class="btn bg-red waves-effect me-2" style="float: right; margin-top: 30px;" href="print/exam_results.php?user_id=<?php echo $user_id; ?>" target="_blank">DOWNLOAD FOR PRINT</a>
                 <h2>RESULTS</h2>
                 <!-- Display Student Information -->
                 <ul>

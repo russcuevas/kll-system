@@ -178,7 +178,11 @@ $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?php endif; ?>
                         </div>
                         <h2><?= htmlspecialchars($course['course_name']) ?></h2>
-                        <p><?= htmlspecialchars($course['course_description'] ?? 'No description available.') ?></p>
+                        <p>
+                            <?= htmlspecialchars(strlen($course['course_description']) > 50
+                                ? substr($course['course_description'], 0, 50) . '...'
+                                : $course['course_description']) ?>
+                        </p>
                         <div class="mt-auto">
                             <a href="view_course.php?id=<?= $course['id'] ?>" class="btn btn-primary learn-btn">Learn More</a>
                         </div>

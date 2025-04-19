@@ -290,11 +290,9 @@ $courses = $get_stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="body">
                             <form action="">
                                 <div class="form-group" style="display: flex; align-items: center;">
-                                    <label for="year-select-gender"
-                                        style="font-weight: 600; margin-right: 10px;">Year:</label>
+                                    <label for="year-select-gender" style="font-weight: 600; margin-right: 10px;">Year:</label>
                                     <div class="form-line" style="width: 100px">
-                                        <select class="select-form" id="year-select-gender"
-                                            style="border: none; box-shadow: none;">
+                                        <select class="select-form" id="year-select-gender" style="border: none; box-shadow: none;">
                                             <option value="2025">2025</option>
                                             <option value="2026">2026</option>
                                             <option value="2027">2027</option>
@@ -492,6 +490,33 @@ $courses = $get_stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- YEARLY EXAMINEES -->
     <script>
+        function fetchYearlyExaminees(year = null) {
+            const url = year ? `charts/fetch_yearly_examinees.php?year=${year}` : `charts/fetch_yearly_examinees.php`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const years = data.map(item => item.year);
+                        const examineesCount = data.map(item => item.examinees_count);
+
+                        yearlyExamineesChart.data.labels = years;
+                        yearlyExamineesChart.data.datasets[0].data = examineesCount;
+                        yearlyExamineesChart.update();
+                    } else {
+                        console.error('No data returned from the server');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
         var ctx = document.getElementById('yearly_examinees').getContext('2d');
         var yearlyExamineesChart = new Chart(ctx, {
             type: 'bar',
@@ -499,7 +524,7 @@ $courses = $get_stmt->fetchAll(PDO::FETCH_ASSOC);
                 labels: ['2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033', '2034', '2035'],
                 datasets: [{
                     label: 'Number of Examinees',
-                    data: [2, 3, 4, 5, 3, 6, 2, 4, 7, 8, 9], // Example data for examinees
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     backgroundColor: '#7D0A0A',
                     borderColor: '#7D0A0A',
                     borderWidth: 1
@@ -517,37 +542,68 @@ $courses = $get_stmt->fetchAll(PDO::FETCH_ASSOC);
                 }
             }
         });
+
+        fetchYearlyExaminees();
     </script>
+
+
+
 
     <!-- GENDER CHART -->
     <script>
         var ctx2 = document.getElementById('gender-chart').getContext('2d');
-        var genderChart = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: ['Male', 'Female'], // Labels for the X axis
-                datasets: [{
-                    label: 'Examinees', // Label for the dataset
-                    data: [2, 3], // Data for male and female
-                    backgroundColor: ['#3498db', '#e74c3c'], // Colors for the bars
-                    borderColor: ['#2980b9', '#c0392b'], // Border colors for the bars
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true, // Display the title
-                        text: 'Examinees Based on Gender', // Title text
-                        font: {
-                            size: 18, // Font size for the title
-                            weight: 'bold' // Font weight for the title
-                        },
-                        color: '#2c3e50' // Title color
+        var genderChart;
+
+        function fetchGenderData(year) {
+            fetch(`charts/fetch_gender_examiners.php?year=${year}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.male !== undefined && data.female !== undefined) {
+                        if (genderChart) {
+                            genderChart.destroy();
+                        }
+
+                        genderChart = new Chart(ctx2, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Male', 'Female'],
+                                datasets: [{
+                                    label: 'Examinees',
+                                    data: [data.male, data.female],
+                                    backgroundColor: ['#3498db', '#e74c3c'],
+                                    borderColor: ['#2980b9', '#c0392b'],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    title: {
+                                        display: true,
+                                        text: `Examinees Based on Gender for ${year}`,
+                                        font: {
+                                            size: 18,
+                                            weight: 'bold'
+                                        },
+                                        color: '#2c3e50'
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        console.error("Invalid data format returned from the server.");
                     }
-                }
-            }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        fetchGenderData(2025);
+
+        document.getElementById('year-select-gender').addEventListener('change', function() {
+            var selectedYear = this.value;
+            fetchGenderData(selectedYear);
         });
     </script>
 
