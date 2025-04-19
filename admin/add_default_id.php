@@ -45,41 +45,57 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $strand = $_POST['strand'];
     $default_id = $_POST['default_id']; // Default ID, now included as hidden field
 
-    // Set the default password to "kll1234" and hash it using SHA-1
-    $default_password = "kll1234";
-    $hashed_password = sha1($default_password); // Hash the password
-
-    // Get the current timestamp for created_at and updated_at
-    $created_at = $updated_at = date("Y-m-d H:i:s");
-
-    // Prepare the SQL query
-    $query = "INSERT INTO tbl_examiners (default_id, fullname, gender, age, birthday, strand, email, password, created_at, updated_at)
-VALUES (:default_id, :fullname, :gender, :age, :birthday, :strand, :email, :password, :created_at, :updated_at)";
-
-    // Prepare the statement
-    $stmt = $conn->prepare($query);
-
-    // Bind the parameters to the prepared statement
-    $stmt->bindParam(':default_id', $default_id);
-    $stmt->bindParam(':fullname', $fullname);
-    $stmt->bindParam(':gender', $gender);
-    $stmt->bindParam(':age', $age);
-    $stmt->bindParam(':birthday', $birthday);
-    $stmt->bindParam(':strand', $strand);
+    // Check if email already exists
+    $email_check_query = "SELECT COUNT(*) FROM tbl_examiners WHERE email = :email";
+    $stmt = $conn->prepare($email_check_query);
     $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':password', $hashed_password); // Insert the hashed password
-    $stmt->bindParam(':created_at', $created_at);
-    $stmt->bindParam(':updated_at', $updated_at);
+    $stmt->execute();
 
-    // Execute the prepared statement
-    if ($stmt->execute()) {
-        header("Location: " . $_SERVER['PHP_SELF']); // This will refresh the page
-        $_SESSION['success'] = "Examiners added successfully";
+    $email_exists = $stmt->fetchColumn();
 
-        exit; // Always call exit after header redirection
+    if ($email_exists > 0) {
+        // Email already exists, store error message in session
+        $_SESSION['errors'] = "The email address is already registered.";
     } else {
-        // Error message
-        echo "Error: Unable to add examiner.";
+        // If email is not taken, proceed with adding the new examiner
+
+        // Set the default password to "kll1234" and hash it using SHA-1
+        $default_password = "kll1234";
+        $hashed_password = sha1($default_password); // Hash the password
+
+        // Get the current timestamp for created_at and updated_at
+        $created_at = $updated_at = date("Y-m-d H:i:s");
+
+        // Prepare the SQL query
+        $query = "INSERT INTO tbl_examiners (default_id, fullname, gender, age, birthday, strand, email, password, created_at, updated_at)
+        VALUES (:default_id, :fullname, :gender, :age, :birthday, :strand, :email, :password, :created_at, :updated_at)";
+
+        // Prepare the statement
+        $stmt = $conn->prepare($query);
+
+        // Bind the parameters to the prepared statement
+        $stmt->bindParam(':default_id', $default_id);
+        $stmt->bindParam(':fullname', $fullname);
+        $stmt->bindParam(':gender', $gender);
+        $stmt->bindParam(':age', $age);
+        $stmt->bindParam(':birthday', $birthday);
+        $stmt->bindParam(':strand', $strand);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':password', $hashed_password); // Insert the hashed password
+        $stmt->bindParam(':created_at', $created_at);
+        $stmt->bindParam(':updated_at', $updated_at);
+
+        // Execute the prepared statement
+        if ($stmt->execute()) {
+            // On success, redirect and clear the error session
+            $_SESSION['success'] = "Examiners added successfully";
+            unset($_SESSION['error']); // Clear any previous error messages
+            header("Location: " . $_SERVER['PHP_SELF']); // Refresh the page
+            exit; // Always call exit after header redirection
+        } else {
+            // Error message
+            $_SESSION['errors'] = "Unable to add examiner.";
+        }
     }
 }
 ?>

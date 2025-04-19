@@ -2,7 +2,22 @@
 include 'database/connection.php';
 include 'session_not_login.php';
 
+$user_id = $_SESSION['user_id'];
+
+$check_query = "SELECT COUNT(*) FROM tbl_responses WHERE user_id = :user_id";
+$check_stmt = $conn->prepare($check_query);
+$check_stmt->bindParam(':user_id', $user_id);
+$check_stmt->execute();
+$existing_responses = $check_stmt->fetchColumn();
+
+if ($existing_responses > 0) {
+    header('Location: dashboard.php');
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $all_success = true;
+
     foreach ($_POST['answer'] as $question_id => $selected_option) {
         $user_id = $_SESSION['user_id'];
 
@@ -10,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                          VALUES (:user_id, :question_id, :selected_option, :points)";
         $insert_stmt = $conn->prepare($insert_query);
 
+        // Points logic
         $points = ($selected_option == 1) ? 1 : 0;
 
         $insert_stmt->bindParam(':user_id', $user_id);
@@ -17,11 +33,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $insert_stmt->bindParam(':selected_option', $selected_option);
         $insert_stmt->bindParam(':points', $points);
 
-        if ($insert_stmt->execute()) {
-            echo "Response submitted successfully!";
-        } else {
-            echo "Failed to submit the response!";
+        if (!$insert_stmt->execute()) {
+            $all_success = false;
+            break;
         }
+    }
+
+    if ($all_success) {
+        header('Location: generate_result.php?submitted=success');
+        exit();
+    } else {
+        echo "<script>alert('Something went wrong while submitting. Please try again.');</script>";
     }
 }
 
@@ -31,6 +53,7 @@ $question_stmt = $conn->prepare($question_query);
 $question_stmt->execute();
 $question = $question_stmt->fetchAll(PDO::FETCH_OBJ);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -169,10 +192,42 @@ $question = $question_stmt->fetchAll(PDO::FETCH_OBJ);
     <!-- JQUERY STEPS JS -->
     <script src="assets/plugins/jquery-steps/jquery.steps.js"></script>
     <!-- SWEETALERT JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/js/HoldOn.js"></script>
     <!-- WAVES EFFECTS JS -->
     <script src="assets/plugins/node-waves/waves.js"></script>
+    <script>
+        document.getElementById('submit-response').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent default form submit
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Are you sure you want to submit your answers?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, submit it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Generating results...',
+                        html: 'Please wait while we process your answers.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Submit the form using JS after delay or processing
+                    setTimeout(() => {
+                        e.target.submit(); // Actually submit the form
+                    }, 1000); // Simulate loading (optional)
+                }
+                // If canceled, do nothing
+            });
+        });
+    </script>
 
 </body>
 

@@ -163,7 +163,7 @@ foreach ($courses_points as $course_data) {
                 </div>
             </div>
             <div class="container-box">
-                <a class="btn bg-red waves-effect me-2" style="float: right; margin-top: 30px;" href="">DOWNLOAD FOR PRINT</a>
+                <a class="btn bg-red waves-effect me-2" style="float: right; margin-top: 30px;" href="dashboard.php">GO TO MY DASHBOARD</a>
                 <h2>RESULTS</h2>
 
                 <!-- Display Student Information -->
@@ -316,6 +316,25 @@ foreach ($courses_points as $course_data) {
     <!-- Jquery Core Js -->
     <script src="admin/plugins/jquery/jquery.min.js"></script>
     <script src="admin/plugins/chartjs/Chart.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isSubmitted = urlParams.get('submitted');
+
+            if (isSubmitted === 'success') {
+                swal({
+                    title: 'Submitted Successfully!',
+                    text: 'Your assessment has been submitted and recorded.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                });
+            }
+        });
+    </script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             fetch('calculate_points.php')

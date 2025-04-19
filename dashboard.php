@@ -114,6 +114,12 @@ include 'session_not_login.php';
                             <span>My Results</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="home.php">
+                            <i class="material-icons">public</i>
+                            <span>Home</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
             <!-- #Menu -->

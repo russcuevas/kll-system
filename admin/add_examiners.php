@@ -132,9 +132,25 @@ $examiners = $stmt_get_examiners->fetchAll(PDO::FETCH_ASSOC);
                             </h2>
                         </div>
                         <div class="body">
+                            <!-- ALERTS -->
+                            <?php if (isset($_SESSION['success'])) : ?>
+                                <div class="alert alert-success" role="alert">
+                                    <?= $_SESSION['success']; ?>
+                                </div>
+                                <?php unset($_SESSION['success']);
+                                ?>
+                            <?php elseif (isset($_SESSION['errors'])) : ?>
+                                <div class="alert alert-danger" role="alert">
+                                    <?= $_SESSION['errors']; ?>
+                                </div>
+                                <?php unset($_SESSION['errors']);
+                                ?>
+                            <?php endif; ?>
+                            <!-- END ALERTS -->
                             <div>
                                 <a href="add_default_id.php" class="btn bg-red waves-effect" style="margin-bottom: 15px;">+ ADD EXAMINERS</a>
                             </div>
+
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
                                     <thead>
@@ -197,7 +213,8 @@ $examiners = $stmt_get_examiners->fetchAll(PDO::FETCH_ASSOC);
                             <p><strong>Updated At:</strong> <span id="updated_at"></span></p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-danger" id="deleteExaminerBtn">DELETE</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">CLOSE</button>
                         </div>
                     </div>
                 </div>
@@ -296,6 +313,17 @@ $examiners = $stmt_get_examiners->fetchAll(PDO::FETCH_ASSOC);
             modal.find('#strand').text(strand);
             modal.find('#created_at').text(created_at);
             modal.find('#updated_at').text(updated_at);
+
+            // Set the delete button's data-default_id attribute to the selected default_id
+            modal.find('#deleteExaminerBtn').data('default_id', default_id);
+        });
+
+        // Handle delete click
+        $('#deleteExaminerBtn').on('click', function() {
+            var default_id = $(this).data('default_id');
+            if (confirm('Are you sure you want to delete this examiner?')) {
+                window.location.href = 'delete_default_id.php?default_id=' + default_id;
+            }
         });
     </script>
 

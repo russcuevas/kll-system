@@ -27,37 +27,46 @@
         </div>
     </div>
 </aside>
-
-
 <!-- CHANGE PASSWORD EXECUTE -->
 <?php
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if (isset($_POST['change_password_btn'])) { // Check if the 'change_password_btn' is set
     if (!empty($_POST['new_password']) && !empty($_POST['confirm_password'])) {
         $new_password = $_POST['new_password'];
         $confirm_password = $_POST['confirm_password'];
+
+        // Check if the passwords match
         if ($new_password === $confirm_password) {
+            // Hash the new password
             $hashed_password = sha1($new_password);
 
+            // Get the admin's ID from the session
             $admin_id = $_SESSION['admin_id'];
 
+            // Prepare the SQL query to update the password
             $query = "UPDATE tbl_admin SET password = :password WHERE id = :admin_id";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(':password', $hashed_password, PDO::PARAM_STR);
             $stmt->bindParam(':admin_id', $admin_id, PDO::PARAM_INT);
 
+            // Execute the query
             if ($stmt->execute()) {
+                // Success
                 $_SESSION['success'] = "Password successfully updated!";
             } else {
+                // Error during update
                 $_SESSION['errors'] = "There was an error updating the password.";
             }
         } else {
+            // Passwords don't match
             $_SESSION['errors'] = "The passwords do not match!";
         }
     } else {
+        // One or both password fields are empty
         $_SESSION['errors'] = "Please fill in both the new password and confirm password fields.";
     }
 }
 ?>
+
 
 <div class="modal fade" id="changePassModal" tabindex="-1" role="dialog" style="display: none;">
     <div class="modal-dialog" role="document">
@@ -80,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn bg-teal waves-effect" type="submit">SAVE</button>
+                        <button class="btn bg-teal waves-effect" name="change_password_btn" type="submit">SAVE</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">CLOSE</button>
                     </div>
                 </form>

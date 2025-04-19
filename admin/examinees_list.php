@@ -249,6 +249,19 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         $currentYear = isset($_GET['year']) ? $_GET['year'] : '';
                         ?>
                         <div class="body">
+                            <?php if (isset($_SESSION['success'])) : ?>
+                                <div class="alert alert-success" role="alert">
+                                    <?= $_SESSION['success']; ?>
+                                </div>
+                                <?php unset($_SESSION['success']);
+                                ?>
+                            <?php elseif (isset($_SESSION['errors'])) : ?>
+                                <div class="alert alert-danger" role="alert">
+                                    <?= $_SESSION['errors']; ?>
+                                </div>
+                                <?php unset($_SESSION['errors']);
+                                ?>
+                            <?php endif; ?>
                             <div class="row mb-3">
                                 <div class="form-group">
                                     <form action="" method="GET">
@@ -304,19 +317,6 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                             <div id="printable-area" class="table-responsive mt-3">
                                 <div id="printable-area" class="table-responsive mt-3">
-                                    <?php if (isset($_SESSION['success'])) : ?>
-                                        <div class="alert alert-success" role="alert">
-                                            <?= $_SESSION['success']; ?>
-                                        </div>
-                                        <?php unset($_SESSION['success']);
-                                        ?>
-                                    <?php elseif (isset($_SESSION['errors'])) : ?>
-                                        <div class="alert alert-danger" role="alert">
-                                            <?= $_SESSION['errors']; ?>
-                                        </div>
-                                        <?php unset($_SESSION['errors']);
-                                        ?>
-                                    <?php endif; ?>
                                     <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
                                         <thead>
                                             <tr>

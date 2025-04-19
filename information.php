@@ -2,6 +2,17 @@
 include 'database/connection.php';
 include 'session_not_login.php';
 
+$user_id = $_SESSION['user_id'];
+$check_query = "SELECT * FROM tbl_preferred_courses WHERE user_id = :user_id";
+$check_stmt = $conn->prepare($check_query);
+$check_stmt->bindParam(':user_id', $user_id);
+$check_stmt->execute();
+
+if ($check_stmt->rowCount() > 0) {
+    echo "<script>window.location.href = 'assessment.php';</script>";
+    exit();
+}
+
 // INSERT TO PREFERRED COURSE
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $course_1 = $_POST['course_1'];
@@ -31,6 +42,7 @@ $course_stmt = $conn->prepare($course_query);
 $course_stmt->execute();
 $courses = $course_stmt->fetchAll(PDO::FETCH_OBJ);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -273,7 +285,7 @@ $courses = $course_stmt->fetchAll(PDO::FETCH_OBJ);
     <!-- JQUERY STEPS JS -->
     <script src="assets/plugins/jquery-steps/jquery.steps.js"></script>
     <!-- SWEETALERT JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/js/HoldOn.js"></script>
     <!-- WAVES EFFECTS JS -->
     <script src="assets/plugins/node-waves/waves.js"></script>
@@ -287,7 +299,7 @@ $courses = $course_stmt->fetchAll(PDO::FETCH_OBJ);
     <script>
         $(document).ready(function() {
             $('form').on('submit', function(event) {
-                event.preventDefault();
+                event.preventDefault(); // stop default form submission
 
                 const fullname = $('input[name="fullname"]').val();
                 const email = $('input[name="email"]').val();
@@ -305,43 +317,55 @@ $courses = $course_stmt->fetchAll(PDO::FETCH_OBJ);
                 <strong>Birthday:</strong> ${birthday}<br>
                 <strong>Gender:</strong> ${gender}<br>
                 <strong>Age:</strong> ${age}<br>
-                <strong>Strand:</strong> ${strand}<br>
+                <strong>Strand:</strong> ${strand}<br><br>
                 <strong>Preferred Courses:</strong><br>
                 1. ${course_1}<br>
                 2. ${course_2}<br>
                 3. ${course_3}
             `;
 
-                swal({
-                    title: "Are you sure?",
-                    text: "To proceed in examination please confirm that all information is correct.",
-                    icon: "warning",
-                    html: true,
-                    buttons: {
-                        cancel: {
-                            text: "Cancel",
-                            value: null,
-                            visible: true,
-                            className: "btn btn-danger",
-                            closeModal: true
-                        },
-                        confirm: {
-                            text: "Proceed to Exam",
-                            value: true,
-                            visible: true,
-                            className: "btn btn-primary",
-                            closeModal: true
-                        }
-                    }
-                }).then((willSubmit) => {
-                    if (willSubmit) {
-                        this.submit();
+                Swal.fire({
+                    title: 'Are you sure?',
+                    html: confirmationMessage,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, submit it!',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Saving your preferences...',
+                            text: 'Please wait...',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        $.ajax({
+                            url: '',
+                            method: 'POST',
+                            data: $('form').serialize(),
+                            success: function(response) {
+                                setTimeout(() => {
+                                    window.location.href = 'assessment.php';
+                                }, 1500);
+                            },
+                            error: function() {
+                                Swal.fire(
+                                    'Error!',
+                                    'Something went wrong. Please try again.',
+                                    'error'
+                                );
+                            }
+                        });
                     }
                 });
-
             });
         });
     </script>
+
 
 
 </body>

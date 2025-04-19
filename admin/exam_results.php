@@ -3,7 +3,7 @@ include '../database/connection.php';
 include 'session_not_login.php';
 
 $query_students = "
-SELECT 
+SELECT DISTINCT
     e.id,
     e.default_id,
     e.fullname,
@@ -21,6 +21,8 @@ SELECT
     e.updated_at
 FROM 
     tbl_examiners e
+INNER JOIN 
+    tbl_responses r ON e.id = r.user_id
 LEFT JOIN 
     tbl_preferred_courses pc ON e.id = pc.user_id
 LEFT JOIN 
@@ -30,6 +32,7 @@ LEFT JOIN
 LEFT JOIN 
     tbl_courses c3 ON pc.course_3 = c3.id
 ";
+
 
 $stmt = $conn->prepare($query_students);
 $stmt->execute();
@@ -214,6 +217,19 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                         </div>
                         <div class="body">
+                            <?php if (isset($_SESSION['success'])) : ?>
+                                <div class="alert alert-success" role="alert">
+                                    <?= $_SESSION['success']; ?>
+                                </div>
+                                <?php unset($_SESSION['success']);
+                                ?>
+                            <?php elseif (isset($_SESSION['errors'])) : ?>
+                                <div class="alert alert-danger" role="alert">
+                                    <?= $_SESSION['errors']; ?>
+                                </div>
+                                <?php unset($_SESSION['errors']);
+                                ?>
+                            <?php endif; ?>
                             <div class="row mb-3">
                                 <div class="form-group">
                                     <form action="" method="GET">
