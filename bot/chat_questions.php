@@ -1,5 +1,5 @@
 <?php
-include 'database/connection.php';
+include '../database/connection.php';
 
 $query = "SELECT chat_question, bot_response, sequence FROM tbl_chatbot ORDER BY sequence ASC, created_at ASC";
 $stmt = $conn->prepare($query);

@@ -7,7 +7,10 @@
     <title> KLL - Kolehiyo ng Lungsod ng Lipa</title>
 
     <link rel="stylesheet" type="text/css" href="home-assets/css/vendor.css">
+    <link href="assets/css/bot.css" rel="stylesheet" />
+    <style>
 
+    </style>
     <!-- Link Swiper's CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
     <link rel="shortcut icon" href="images/login/logo-kll.jpg" type="image/x-icon">
@@ -521,9 +524,7 @@
         </div>
     </section>
 
-
-
-
+    <?php include 'chatbot.php' ?>
     <script src="home-assets/js/jquery-1.11.0.min.js"></script>
     <script src="home-assets/js/script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
@@ -533,7 +534,6 @@
     <script>
         AOS.init();
     </script>
-
 </body>
 
 </html>
