@@ -10,7 +10,6 @@ $result_admin_total = $stmt_admin_total->fetch(PDO::FETCH_ASSOC);
 $admin_total = $result_admin_total['admin_total'];
 // END GET TOTAL ADMIN
 
-
 // GET THE EXAMINEES
 $get_examinees_list = "SELECT COUNT(*) AS examinees_list FROM `tbl_examiners`";
 $stmt_examinees_list = $conn->prepare($get_examinees_list);
@@ -27,12 +26,108 @@ $result_available_course = $stmt_available_course->fetch(PDO::FETCH_ASSOC);
 $available_course = $result_available_course['available_course'];
 // END GET TOTAL COURSE
 
-
 //FETCH COURSE
 $get_course = "SELECT * FROM `tbl_courses`";
 $get_stmt = $conn->query($get_course);
 $courses = $get_stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// FETCH ALL STUDENTS INFO
+$query_students = "SELECT id, default_id, fullname, gender, age, birthday, strand FROM tbl_examiners";
+$stmt_students = $conn->prepare($query_students);
+$stmt_students->execute();
+$students = $stmt_students->fetchAll(PDO::FETCH_ASSOC);
+
+// FETCH PREFERRED COURSES FOR ALL STUDENTS
+$query_courses = "
+SELECT 
+    pc.user_id, 
+    c1.course_name AS course_1_name,
+    c2.course_name AS course_2_name,
+    c3.course_name AS course_3_name
+FROM 
+    tbl_preferred_courses pc
+LEFT JOIN tbl_courses c1 ON pc.course_1 = c1.id
+LEFT JOIN tbl_courses c2 ON pc.course_2 = c2.id
+LEFT JOIN tbl_courses c3 ON pc.course_3 = c3.id
+";
+$stmt_courses = $conn->prepare($query_courses);
+$stmt_courses->execute();
+$preferred_courses = $stmt_courses->fetchAll(PDO::FETCH_ASSOC);
+
+// FETCH ANALYTICS DATA FOR ALL STUDENTS
+$query_analytics = "
+SELECT 
+    r.user_id,
+    SUM(CASE WHEN r.selected_option_id = 1 THEN 1 ELSE 0 END) AS total_points
+FROM 
+    tbl_responses r
+GROUP BY 
+    r.user_id
+";
+$stmt_analytics = $conn->prepare($query_analytics);
+$stmt_analytics->execute();
+$analytics_data = $stmt_analytics->fetchAll(PDO::FETCH_ASSOC);
+
+// FETCH EXAM DATES FOR ALL STUDENTS
+$query_date = "SELECT user_id, MIN(created_at) AS exam_date FROM tbl_responses GROUP BY user_id";
+$stmt_date = $conn->prepare($query_date);
+$stmt_date->execute();
+$exam_dates = $stmt_date->fetchAll(PDO::FETCH_ASSOC);
+
+// FETCH COURSE POINTS TO SUGGEST TOP 5 COURSES
+$query_course_points = "
+SELECT 
+    c.course_name,
+    SUM(CASE WHEN r.selected_option_id = 1 THEN 1 ELSE 0 END) AS total_points
+FROM 
+    tbl_courses c
+LEFT JOIN 
+    tbl_question_courses qc ON c.id = qc.course_id
+LEFT JOIN 
+    tbl_questions q ON qc.question_id = q.id
+LEFT JOIN 
+    tbl_responses r ON q.id = r.question_id
+GROUP BY 
+    c.id
+HAVING total_points > 0
+ORDER BY 
+    total_points DESC
+LIMIT 5
+";
+$stmt_course_points = $conn->prepare($query_course_points);
+$stmt_course_points->execute();
+$top_courses = $stmt_course_points->fetchAll(PDO::FETCH_ASSOC);
+
+// Combine preferred courses and analytics data with student data
+$students_data = [];
+foreach ($students as $student) {
+    // Find corresponding preferred courses for the student
+    $student_courses = array_filter($preferred_courses, function ($course) use ($student) {
+        return $course['user_id'] == $student['id'];
+    });
+    $student_courses = reset($student_courses); // Get the first matching record
+
+    // Find corresponding analytics data for the student
+    $student_analytics = array_filter($analytics_data, function ($analytics) use ($student) {
+        return $analytics['user_id'] == $student['id'];
+    });
+    $student_analytics = reset($student_analytics); // Get the first matching record
+
+    // Find corresponding exam date for the student
+    $student_exam_date = array_filter($exam_dates, function ($exam_date) use ($student) {
+        return $exam_date['user_id'] == $student['id'];
+    });
+    $student_exam_date = reset($student_exam_date); // Get the first matching record
+
+    // Prepare student data
+    $students_data[] = [
+        'student' => $student,
+        'preferred_courses' => $student_courses,
+        'analytics' => $student_analytics,
+        'exam_date' => isset($student_exam_date['exam_date']) ? date('F d, Y h:i A', strtotime($student_exam_date['exam_date'])) : 'N/A',
+        'top_courses' => $top_courses // Add the top courses to the data
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -413,41 +508,59 @@ $courses = $get_stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div class="table-responsive">
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                        <table
-                                            class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                                        <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
                                             <thead>
                                                 <tr>
-                                                    <th>#</th>
-                                                    <th>Fullname</th>
-                                                    <th>Scores</th>
-                                                    <th>Suggested Courses</th>
+                                                    <th>ID</th>
+                                                    <th>Full Name</th>
+                                                    <th>Score </th>
                                                     <th>Preferred Courses</th>
-                                                    <th>Date Result</th>
+                                                    <th>Suggested Courses</th>
+                                                    <th>Exam Date</th>
+                                                    <th>Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td>Mark Angelo Baclayo</td>
-                                                    <td>20</td>
-                                                    <td>Bachelor of Science in Computer Science</td>
-                                                    <td>Bachelor of Science in Criminology</td>
-                                                    <td>March 12, 2025</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td>Hannah</td>
-                                                    <td>20</td>
-                                                    <td>Bachelor of Science in Nursing</td>
-                                                    <td>Bachelor of Science in Computer Science</td>
-                                                    <td>March 12, 2025</td>
-                                                </tr>
+                                                <?php if (!empty($students_data)): ?>
+                                                    <?php foreach ($students_data as $data): ?>
+                                                        <tr>
+                                                            <td><?= htmlspecialchars($data['student']['default_id']) ?></td>
+                                                            <td><?= htmlspecialchars($data['student']['fullname']) ?></td>
+                                                            <td><?= $data['analytics']['total_points'] ?? 0 ?></td> <!-- Total points -->
+                                                            <td>
+                                                                <?= !empty($data['preferred_courses']['course_1_name']) ? htmlspecialchars($data['preferred_courses']['course_1_name']) : 'N/A' ?><br>
+                                                                <?= !empty($data['preferred_courses']['course_2_name']) ? htmlspecialchars($data['preferred_courses']['course_2_name']) : 'N/A' ?><br>
+                                                                <?= !empty($data['preferred_courses']['course_3_name']) ? htmlspecialchars($data['preferred_courses']['course_3_name']) : 'N/A' ?>
+                                                            </td>
+                                                            <td>
+                                                                <?php
+                                                                // Display top 5 courses
+                                                                if (!empty($data['top_courses'])) {
+                                                                    foreach ($data['top_courses'] as $course) {
+                                                                        echo htmlspecialchars($course['course_name']) . ' (' . $course['total_points'] . ' points)<br>';
+                                                                    }
+                                                                } else {
+                                                                    echo 'No suggestions available';
+                                                                }
+                                                                ?>
+                                                            </td>
+                                                            <td><?= $data['exam_date'] ?></td>
+                                                            <td> <a href="view_results.php?user_id=<?= $data['student']['id'] ?>" class="btn btn-warning">View Results</a>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <tr>
+                                                        <td colspan="6">No data available.</td>
+                                                    </tr>
+                                                <?php endif; ?>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
