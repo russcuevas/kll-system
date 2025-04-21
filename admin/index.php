@@ -375,7 +375,27 @@ $courses = $get_stmt->fetchAll(PDO::FETCH_ASSOC);
                             </h2>
                         </div>
                         <div class="body">
-                            <canvas id="preferred-course-chart" height="193"></canvas>
+                            <form action="">
+                                <div class="form-group" style="display: flex; align-items: center;">
+                                    <label for="year-select-top-course" style="font-weight: 600; margin-right: 10px;">Year:</label>
+                                    <div class="form-line" style="width: 100px">
+                                        <select class="select-form" id="year-select-top-course" style="border: none; box-shadow: none;">
+                                            <option value="2025">2025</option>
+                                            <option value="2026">2026</option>
+                                            <option value="2027">2027</option>
+                                            <option value="2028">2028</option>
+                                            <option value="2029">2029</option>
+                                            <option value="2030">2030</option>
+                                            <option value="2031">2031</option>
+                                            <option value="2032">2032</option>
+                                            <option value="2033">2033</option>
+                                            <option value="2034">2034</option>
+                                            <option value="2035">2035</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <canvas id="preferred-course-chart" height="193"></canvas>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -624,37 +644,81 @@ $courses = $get_stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- YEARLY COMPARISSON -->
     <script>
-        // Chart.js configuration
-        var ctx = document.getElementById('preferred-course-chart').getContext('2d');
-        var preferredCourseChart = new Chart(ctx, {
-            type: 'pie', // Pie chart type
-            data: {
-                labels: ['Bachelor of Science in Computer Science', 'Bachelor of Science in Criminology', 'Bachelor of Science in Business Administration'], // Names of top 3 courses
-                datasets: [{
-                    label: 'Top Preferred Courses',
-                    data: [30, 40, 30], // Data for each course (adjust the values as necessary)
-                    backgroundColor: ['#FF5733', '#33FF57', '#3357FF'], // Different colors for each course
-                    borderColor: ['#fff', '#fff', '#fff'],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true, // Make chart responsive
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                return tooltipItem.label + ': ' + tooltipItem.raw + '%'; // Display percentage
+        const ctx3 = document.getElementById('preferred-course-chart').getContext('2d');
+        let preferredCourseChart;
+
+        function fetchTopCourses(year) {
+            fetch(`charts/fetch_top_courses.php?year=${year}`)
+                .then(async response => {
+                    const contentType = response.headers.get("content-type");
+                    if (!contentType || !contentType.includes("application/json")) {
+                        const text = await response.text();
+                        throw new Error("Expected JSON but received: " + text);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        console.error('Server error:', data.message);
+                        return;
+                    }
+
+
+
+                    if (data.labels.length === 0 || data.data.length === 0) {
+                        data.labels = ["No Data Available"];
+                        data.data = [1]; // Only 1 slice for no data (with red color)
+                    }
+
+                    // Destroy the existing chart if it exists
+                    if (preferredCourseChart) {
+                        preferredCourseChart.destroy();
+                    }
+
+                    preferredCourseChart = new Chart(ctx3, {
+                        type: 'pie',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Top Preferred Courses',
+                                data: data.data,
+                                backgroundColor: ['#FF5733', '#33FF57', '#3357FF'],
+                                borderColor: ['#fff', '#fff', '#fff'],
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(tooltipItem) {
+                                            return tooltipItem.label + ': ' + tooltipItem.raw;
+                                        }
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-            }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching course data:', error.message);
+                });
+        }
+
+        // Initial fetch with default year
+        fetchTopCourses(2025);
+
+        // Add change event listener
+        document.getElementById('year-select-top-course').addEventListener('change', function() {
+            const selectedYear = this.value;
+            fetchTopCourses(selectedYear);
         });
     </script>
+
 
     <!-- Custom Js -->
     <script src="js/admin.js"></script>
