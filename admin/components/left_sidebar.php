@@ -69,6 +69,13 @@
                 </a>
             </li>
 
+            <li class="<?php echo (basename($_SERVER['PHP_SELF']) == 'chatbot.php' || basename($_SERVER['PHP_SELF']) == 'add_inquiry.php' || basename($_SERVER['PHP_SELF']) == 'update_chatbot.php') ? 'active' : ''; ?>">
+                <a href="chatbot.php">
+                    <i class="material-icons">smart_toy</i>
+                    <span>Chatbot</span>
+                </a>
+            </li>
+
         </ul>
     </div>
     <!-- #Menu -->
