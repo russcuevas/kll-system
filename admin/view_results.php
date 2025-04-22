@@ -318,7 +318,7 @@ $exam_date = $date_result['exam_date'] ? date('F d, Y h:i A', strtotime($date_re
 
                 <!-- Donut Chart -->
                 <div style="width: 50%; height: 100vh; display: flex !important; justify-content: center !important; align-items: center !important;">
-                    <canvas id="myDonutChart" width="50" height="400"></canvas>
+                    <canvas id="myDonutChart" width="50" height="70"></canvas>
                 </div>
 
                 <div id="division"></div>
@@ -354,38 +354,80 @@ $exam_date = $date_result['exam_date'] ? date('F d, Y h:i A', strtotime($date_re
 
                 <div id="division"></div>
 
-                <h2>Suggested Courses <br> <span style="color: brown; font-size: 20px;"><i>(the highlighted courses are related to your preferred courses)</i></span><br><br></h2>
-                <h6 style="color: brown; font-weight: 900;">SUGGESTED COURSE</h6>
-                <ul style="margin-bottom: 50px !important;">
-                    <?php
-                    // Create an array of preferred courses to compare
+                <?php
+                // Check if $preferred_courses is not empty before initializing the array
+                if (!empty($preferred_courses)) {
                     $preferred_courses_array = [
                         $preferred_courses['course_1_name'],
                         $preferred_courses['course_2_name'],
                         $preferred_courses['course_3_name']
                     ];
+                } else {
+                    $preferred_courses_array = []; // Initialize as empty array if no preferred courses
+                }
 
-                    foreach ($suggested_courses as $course):
-                        // Find the total points for the current course
-                        $course_points = 0;
-                        foreach ($courses_points as $course_data) {
-                            if ($course_data['course_name'] == $course) {
+                ?>
+                <h2>Suggested Courses <br> <span style="color: brown; font-size: 20px;"><i>(the red highlighted courses are related to your preferred courses)</i></span><br><br></h2>
+                <h6 style="color: brown; font-weight: 900;">SUGGESTED COURSE</h6>
+                <div class="row">
+                    <!-- Top 5 Courses -->
+                    <div class="col-md-4">
+                        <h6 style="color: brown; font-weight: 900;">Top 5 Courses</h6>
+                        <ul style="margin-bottom: 50px !important;">
+                            <?php
+                            $top_5_courses = array_slice($courses_points, 0, 5);  // Get the top 5 courses
+                            foreach ($top_5_courses as $course_data):
+                                $course = $course_data['course_name'];
                                 $course_points = $course_data['total_points'];
-                                break;
-                            }
-                        }
+                                // Check if it's a preferred course
+                                if (in_array($course, $preferred_courses_array)) {
+                                    echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                                } else {
+                                    echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                                }
+                            endforeach;
+                            ?>
+                        </ul>
+                    </div>
 
-                        // Check if the suggested course is one of the preferred courses
-                        if (in_array($course, $preferred_courses_array)) {
-                            // Highlight in red if it's related to a preferred course
-                            echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
-                        } else {
-                            // Display in black if it's not related to the preferred course
-                            echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
-                        }
-                    endforeach;
-                    ?>
-                </ul>
+                    <!-- Top 3 Courses -->
+                    <div class="col-md-4">
+                        <h6 style="color: brown; font-weight: 900;">Top 3 Courses</h6>
+                        <ul style="margin-bottom: 50px !important;">
+                            <?php
+                            $top_3_courses = array_slice($courses_points, 0, 3);  // Get the top 3 courses
+                            foreach ($top_3_courses as $course_data):
+                                $course = $course_data['course_name'];
+                                $course_points = $course_data['total_points'];
+                                // Check if it's a preferred course
+                                if (in_array($course, $preferred_courses_array)) {
+                                    echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                                } else {
+                                    echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                                }
+                            endforeach;
+                            ?>
+                        </ul>
+                    </div>
+
+                    <!-- Top 1 Course -->
+                    <div class="col-md-4">
+                        <h6 style="color: brown; font-weight: 900;">Top 1 Course</h6>
+                        <ul style="margin-bottom: 50px !important;">
+                            <?php
+                            $top_1_course = $courses_points[0];  // Get the top 1 course (first one after sorting)
+                            $course = $top_1_course['course_name'];
+                            $course_points = $top_1_course['total_points'];
+                            // Check if it's a preferred course
+                            if (in_array($course, $preferred_courses_array)) {
+                                echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                            } else {
+                                echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                            }
+                            ?>
+                        </ul>
+                    </div>
+                </div>
 
             </div>
         </div>

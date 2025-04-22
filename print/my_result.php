@@ -1,12 +1,12 @@
 <?php
-include '../../database/connection.php';
+include '../database/connection.php';
 include '../session_not_login.php';
 
 // Validate user ID from query string
-if (isset($_GET['user_id']) && is_numeric($_GET['user_id'])) {
-    $user_id = $_GET['user_id'];
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];  // Retrieve user ID from session
 } else {
-    echo "Invalid or missing User ID.";
+    echo "You are not logged in.";
     exit;
 }
 

@@ -124,6 +124,8 @@ foreach ($courses_points as $course_data) {
     <link href="admin/css/style.css" rel="stylesheet">
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="admin/css/themes/all-themes.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+
     <link rel="stylesheet" href="admin/css/custom.css">
     <!-- FAVICON -->
     <link rel="shortcut icon" href="assets/images/kll-logo.jpg" type="image/x-icon">
@@ -334,7 +336,7 @@ foreach ($courses_points as $course_data) {
                 </div>
             </div>
             <div class="container-box">
-                <a class="btn bg-red waves-effect me-2" style="float: right; margin-top: 30px;" href="">DOWNLOAD FOR PRINT</a>
+                <a class="btn bg-red waves-effect me-2" style="float: right; margin-top: 30px; color: white;" href="print/my_result.php?user_id=<?php echo $user_id; ?>" target="_blank">DOWNLOAD FOR PRINT</a>
                 <h2>RESULTS</h2>
 
                 <!-- Display Student Information -->
@@ -368,7 +370,7 @@ foreach ($courses_points as $course_data) {
                 <div class="row">
                     <div class="col-md-12">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped table-hover">
+                            <table id="analyticsTable" class="table table-bordered table-striped table-hover">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -398,9 +400,7 @@ foreach ($courses_points as $course_data) {
                                         <td><strong><?php echo $total_points; ?> point<?php echo $total_points > 1 ? 's' : ''; ?></strong></td>
                                     </tr>
                                 </tfoot>
-
                             </table>
-
                         </div>
                     </div>
                 </div>
@@ -409,7 +409,7 @@ foreach ($courses_points as $course_data) {
 
                 <!-- Donut Chart -->
                 <div style="width: 50%; height: 100vh; display: flex !important; justify-content: center !important; align-items: center !important;">
-                    <canvas id="myDonutChart" width="50" height="400"></canvas>
+                    <canvas id="myDonutChart" width="50" height="50"></canvas>
                 </div>
 
                 <div id="division"></div>
@@ -445,38 +445,80 @@ foreach ($courses_points as $course_data) {
 
                 <div id="division"></div>
 
-                <h2>Suggested Courses <br> <span style="color: brown; font-size: 20px;"><i>(the red highlighted courses are related to your preferred courses)</i></span><br><br></h2>
-                <h6 style="color: brown; font-weight: 900;">SUGGESTED COURSE</h6>
-                <ul style="margin-bottom: 50px !important;">
-                    <?php
-                    // Create an array of preferred courses to compare
+                <?php
+                // Check if $preferred_courses is not empty before initializing the array
+                if (!empty($preferred_courses)) {
                     $preferred_courses_array = [
                         $preferred_courses['course_1_name'],
                         $preferred_courses['course_2_name'],
                         $preferred_courses['course_3_name']
                     ];
+                } else {
+                    $preferred_courses_array = []; // Initialize as empty array if no preferred courses
+                }
 
-                    foreach ($suggested_courses as $course):
-                        // Find the total points for the current course
-                        $course_points = 0;
-                        foreach ($courses_points as $course_data) {
-                            if ($course_data['course_name'] == $course) {
+                ?>
+                <h2>Suggested Courses <br> <span style="color: brown; font-size: 20px;"><i>(the red highlighted courses are related to your preferred courses)</i></span><br><br></h2>
+                <h6 style="color: brown; font-weight: 900;">SUGGESTED COURSE</h6>
+                <div class="row">
+                    <!-- Top 5 Courses -->
+                    <div class="col-md-4">
+                        <h6 style="color: brown; font-weight: 900;">Top 5 Courses</h6>
+                        <ul style="margin-bottom: 50px !important;">
+                            <?php
+                            $top_5_courses = array_slice($courses_points, 0, 5);  // Get the top 5 courses
+                            foreach ($top_5_courses as $course_data):
+                                $course = $course_data['course_name'];
                                 $course_points = $course_data['total_points'];
-                                break;
-                            }
-                        }
+                                // Check if it's a preferred course
+                                if (in_array($course, $preferred_courses_array)) {
+                                    echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                                } else {
+                                    echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                                }
+                            endforeach;
+                            ?>
+                        </ul>
+                    </div>
 
-                        // Check if the suggested course is one of the preferred courses
-                        if (in_array($course, $preferred_courses_array)) {
-                            // Highlight in red if it's related to a preferred course
-                            echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
-                        } else {
-                            // Display in black if it's not related to the preferred course
-                            echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
-                        }
-                    endforeach;
-                    ?>
-                </ul>
+                    <!-- Top 3 Courses -->
+                    <div class="col-md-4">
+                        <h6 style="color: brown; font-weight: 900;">Top 3 Courses</h6>
+                        <ul style="margin-bottom: 50px !important;">
+                            <?php
+                            $top_3_courses = array_slice($courses_points, 0, 3);  // Get the top 3 courses
+                            foreach ($top_3_courses as $course_data):
+                                $course = $course_data['course_name'];
+                                $course_points = $course_data['total_points'];
+                                // Check if it's a preferred course
+                                if (in_array($course, $preferred_courses_array)) {
+                                    echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                                } else {
+                                    echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                                }
+                            endforeach;
+                            ?>
+                        </ul>
+                    </div>
+
+                    <!-- Top 1 Course -->
+                    <div class="col-md-4">
+                        <h6 style="color: brown; font-weight: 900;">Top 1 Course</h6>
+                        <ul style="margin-bottom: 50px !important;">
+                            <?php
+                            $top_1_course = $courses_points[0];  // Get the top 1 course (first one after sorting)
+                            $course = $top_1_course['course_name'];
+                            $course_points = $top_1_course['total_points'];
+                            // Check if it's a preferred course
+                            if (in_array($course, $preferred_courses_array)) {
+                                echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                            } else {
+                                echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                            }
+                            ?>
+                        </ul>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -513,6 +555,13 @@ foreach ($courses_points as $course_data) {
     <!-- Jquery DataTable Plugin Js -->
     <script src="admin/plugins/jquery-datatable/jquery.dataTables.js"></script>
     <script src="admin/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize the DataTable
+            $('#analyticsTable').DataTable();
+        });
+    </script>
     <script>
         $(function() {
             $('.js-basic-example').DataTable({
@@ -552,30 +601,37 @@ foreach ($courses_points as $course_data) {
     </script>
 
     <script>
-        // Donut chart data
-        var ctx = document.getElementById('myDonutChart').getContext('2d');
-        var myDonutChart = new Chart(ctx, {
-            type: 'doughnut', // Type of chart: Doughnut chart
-            data: {
-                labels: ['Bachelor of Science in Computer Science', 'Bachelor of Science in Criminology', 'Bachelor of Science in Nursing'], // Labels for each section
-                datasets: [{
-                    label: 'Course Preferences',
-                    data: [50, 30, 20], // Data values corresponding to the labels above (example percentages)
-                    backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe'], // Colors for each section
-                    hoverBackgroundColor: ['#ff2b3d', '#2188d6', '#9a47d9'] // Colors on hover
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
-                }
-            }
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('calculate_points.php')
+                .then(response => response.json())
+                .then(data => {
+                    const labels = data.map(item => item.course_name);
+                    const points = data.map(item => parseInt(item.total_points));
+
+                    const ctx = document.getElementById('myDonutChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: points,
+                                backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffcd56', '#4bc0c0', '#ff9f40'],
+                                hoverBackgroundColor: ['#ff2b3d', '#2188d6', '#9a47d9', '#f6b800', '#34b8b8', '#ff781f']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching chart data:', error);
+                });
         });
     </script>
     <!-- Custom Js -->

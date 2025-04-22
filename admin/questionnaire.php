@@ -9,7 +9,7 @@ $sql = "
     LEFT JOIN tbl_question_courses qc ON q.id = qc.question_id
     LEFT JOIN tbl_courses c ON qc.course_id = c.id
     GROUP BY q.id
-    ORDER BY q.created_at DESC
+    ORDER BY q.created_at ASC
 ";
 
 $stmt = $conn->query($sql);

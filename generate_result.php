@@ -109,6 +109,8 @@ foreach ($courses_points as $course_data) {
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
     <link href="admin/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="admin/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+
     <link rel="shortcut icon" href="assets/images/kll-logo.jpg" type="image/x-icon">
     <style>
         /* Custom Styles */
@@ -197,7 +199,7 @@ foreach ($courses_points as $course_data) {
                 <div class="row">
                     <div class="col-md-12">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped table-hover">
+                            <table id="analyticsTable" class="table table-bordered table-striped table-hover">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -227,9 +229,7 @@ foreach ($courses_points as $course_data) {
                                         <td><strong><?php echo $total_points; ?> point<?php echo $total_points > 1 ? 's' : ''; ?></strong></td>
                                     </tr>
                                 </tfoot>
-
                             </table>
-
                         </div>
                     </div>
                 </div>
@@ -240,7 +240,7 @@ foreach ($courses_points as $course_data) {
 
                 <!-- Donut Chart -->
                 <div style="width: 50%; height: 100vh; display: flex !important; justify-content: center !important; align-items: center !important;">
-                    <canvas id="myDonutChart" width="50" height="400"></canvas>
+                    <canvas id="myDonutChart" width="50" height="70"></canvas>
                 </div>
 
                 <div id="division"></div>
@@ -276,38 +276,80 @@ foreach ($courses_points as $course_data) {
 
                 <div id="division"></div>
 
-                <h2>Suggested Courses <br> <span style="color: brown; font-size: 20px;"><i>(the highlighted courses are related to your preferred courses)</i></span><br><br></h2>
-                <h6 style="color: brown; font-weight: 900;">SUGGESTED COURSE</h6>
-                <ul style="margin-bottom: 50px !important;">
-                    <?php
-                    // Create an array of preferred courses to compare
+                <?php
+                // Check if $preferred_courses is not empty before initializing the array
+                if (!empty($preferred_courses)) {
                     $preferred_courses_array = [
                         $preferred_courses['course_1_name'],
                         $preferred_courses['course_2_name'],
                         $preferred_courses['course_3_name']
                     ];
+                } else {
+                    $preferred_courses_array = []; // Initialize as empty array if no preferred courses
+                }
 
-                    foreach ($suggested_courses as $course):
-                        // Find the total points for the current course
-                        $course_points = 0;
-                        foreach ($courses_points as $course_data) {
-                            if ($course_data['course_name'] == $course) {
+                ?>
+                <h2>Suggested Courses <br> <span style="color: brown; font-size: 20px;"><i>(the red highlighted courses are related to your preferred courses)</i></span><br><br></h2>
+                <h6 style="color: brown; font-weight: 900;">SUGGESTED COURSE</h6>
+                <div class="row">
+                    <!-- Top 5 Courses -->
+                    <div class="col-md-4">
+                        <h6 style="color: brown; font-weight: 900;">Top 5 Courses</h6>
+                        <ul style="margin-bottom: 50px !important;">
+                            <?php
+                            $top_5_courses = array_slice($courses_points, 0, 5);  // Get the top 5 courses
+                            foreach ($top_5_courses as $course_data):
+                                $course = $course_data['course_name'];
                                 $course_points = $course_data['total_points'];
-                                break;
-                            }
-                        }
+                                // Check if it's a preferred course
+                                if (in_array($course, $preferred_courses_array)) {
+                                    echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                                } else {
+                                    echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                                }
+                            endforeach;
+                            ?>
+                        </ul>
+                    </div>
 
-                        // Check if the suggested course is one of the preferred courses
-                        if (in_array($course, $preferred_courses_array)) {
-                            // Highlight in red if it's related to a preferred course
-                            echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
-                        } else {
-                            // Display in black if it's not related to the preferred course
-                            echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
-                        }
-                    endforeach;
-                    ?>
-                </ul>
+                    <!-- Top 3 Courses -->
+                    <div class="col-md-4">
+                        <h6 style="color: brown; font-weight: 900;">Top 3 Courses</h6>
+                        <ul style="margin-bottom: 50px !important;">
+                            <?php
+                            $top_3_courses = array_slice($courses_points, 0, 3);  // Get the top 3 courses
+                            foreach ($top_3_courses as $course_data):
+                                $course = $course_data['course_name'];
+                                $course_points = $course_data['total_points'];
+                                // Check if it's a preferred course
+                                if (in_array($course, $preferred_courses_array)) {
+                                    echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                                } else {
+                                    echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                                }
+                            endforeach;
+                            ?>
+                        </ul>
+                    </div>
+
+                    <!-- Top 1 Course -->
+                    <div class="col-md-4">
+                        <h6 style="color: brown; font-weight: 900;">Top 1 Course</h6>
+                        <ul style="margin-bottom: 50px !important;">
+                            <?php
+                            $top_1_course = $courses_points[0];  // Get the top 1 course (first one after sorting)
+                            $course = $top_1_course['course_name'];
+                            $course_points = $top_1_course['total_points'];
+                            // Check if it's a preferred course
+                            if (in_array($course, $preferred_courses_array)) {
+                                echo "<li><span class='highlight'>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                            } else {
+                                echo "<li><span>{$course} - {$course_points} point" . ($course_points > 1 ? 's' : '') . "</span></li>";
+                            }
+                            ?>
+                        </ul>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -317,6 +359,8 @@ foreach ($courses_points as $course_data) {
     <script src="admin/plugins/jquery/jquery.min.js"></script>
     <script src="admin/plugins/chartjs/Chart.bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -367,6 +411,13 @@ foreach ($courses_points as $course_data) {
                 .catch(error => {
                     console.error('Error fetching chart data:', error);
                 });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTable
+            $('#analyticsTable').DataTable();
         });
     </script>
 
