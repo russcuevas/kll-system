@@ -1,104 +1,30 @@
 <?php
 include '../database/connection.php';  // Include the PDO connection
-include 'session_not_login.php';  // Include session check (optional)
+include 'session_not_login.php';       // Include session check (optional)
 
-// Get today's date in YYYYMMDD format
-$current_year = date('Y');
-$current_month = date('m');
-$current_day = date('d');
-$current_date = $current_year . $current_month . $current_day;
-
-// Create a variable for the value you want to bind to the query
+// Generate today's date in YYYYMMDD format
+$current_date = date('Ymd');
 $search_pattern = $current_date . '%';
 
-// Query the database to find the highest sequence number for the current date
+// Query to find highest default_id for today
 $query = "SELECT default_id FROM tbl_examiners WHERE default_id LIKE :current_date ORDER BY default_id DESC LIMIT 1";
 $stmt = $conn->prepare($query);
-
-// Bind the parameter using the variable
-$stmt->bindParam(':current_date', $search_pattern); // Use the variable with the value
+$stmt->bindParam(':current_date', $search_pattern);
 $stmt->execute();
-
-// Check if there are existing IDs for today
 $existing_id = $stmt->fetch(PDO::FETCH_ASSOC);
 
+// Generate next default_id
 if ($existing_id) {
-    // Extract the sequence number from the existing ID
-    $existing_id_value = $existing_id['default_id'];
-    $sequence_number = substr($existing_id_value, -2); // Get the last 2 digits (sequence)
+    $sequence_number = substr($existing_id['default_id'], -2);
     $next_sequence = str_pad($sequence_number + 1, 2, '0', STR_PAD_LEFT);
 } else {
-    // If no existing ID for today, start with 01
     $next_sequence = '01';
 }
-
-// Generate the new random ID
 $random_id = $current_date . '-' . $next_sequence;
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Sanitize and retrieve form inputs
-    $fullname = $_POST['fullname'];
-    $email = $_POST['email'];
-    $gender = $_POST['gender'];
-    $age = $_POST['age'];
-    $birthday = $_POST['birthday'];
-    $strand = $_POST['strand'];
-    $default_id = $_POST['default_id']; // Default ID, now included as hidden field
 
-    // Check if email already exists
-    $email_check_query = "SELECT COUNT(*) FROM tbl_examiners WHERE email = :email";
-    $stmt = $conn->prepare($email_check_query);
-    $stmt->bindParam(':email', $email);
-    $stmt->execute();
-
-    $email_exists = $stmt->fetchColumn();
-
-    if ($email_exists > 0) {
-        // Email already exists, store error message in session
-        $_SESSION['errors'] = "The email address is already registered.";
-    } else {
-        // If email is not taken, proceed with adding the new examiner
-
-        // Set the default password to "kll1234" and hash it using SHA-1
-        $default_password = "kll1234";
-        $hashed_password = sha1($default_password); // Hash the password
-
-        // Get the current timestamp for created_at and updated_at
-        $created_at = $updated_at = date("Y-m-d H:i:s");
-
-        // Prepare the SQL query
-        $query = "INSERT INTO tbl_examiners (default_id, fullname, gender, age, birthday, strand, email, password, created_at, updated_at)
-        VALUES (:default_id, :fullname, :gender, :age, :birthday, :strand, :email, :password, :created_at, :updated_at)";
-
-        // Prepare the statement
-        $stmt = $conn->prepare($query);
-
-        // Bind the parameters to the prepared statement
-        $stmt->bindParam(':default_id', $default_id);
-        $stmt->bindParam(':fullname', $fullname);
-        $stmt->bindParam(':gender', $gender);
-        $stmt->bindParam(':age', $age);
-        $stmt->bindParam(':birthday', $birthday);
-        $stmt->bindParam(':strand', $strand);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':password', $hashed_password); // Insert the hashed password
-        $stmt->bindParam(':created_at', $created_at);
-        $stmt->bindParam(':updated_at', $updated_at);
-
-        // Execute the prepared statement
-        if ($stmt->execute()) {
-            // On success, redirect and clear the error session
-            $_SESSION['success'] = "Examiners added successfully";
-            unset($_SESSION['error']); // Clear any previous error messages
-            header("Location: " . $_SERVER['PHP_SELF']); // Refresh the page
-            exit; // Always call exit after header redirection
-        } else {
-            // Error message
-            $_SESSION['errors'] = "Unable to add examiner.";
-        }
-    }
-}
 ?>
+
 
 
 
@@ -226,19 +152,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                         <div class="body">
                             <!-- ALERTS -->
-                            <?php if (isset($_SESSION['success'])) : ?>
-                                <div class="alert alert-success" role="alert">
-                                    <?= $_SESSION['success']; ?>
-                                </div>
-                                <?php unset($_SESSION['success']);
-                                ?>
-                            <?php elseif (isset($_SESSION['errors'])) : ?>
-                                <div class="alert alert-danger" role="alert">
-                                    <?= $_SESSION['errors']; ?>
-                                </div>
-                                <?php unset($_SESSION['errors']);
-                                ?>
-                            <?php endif; ?>
+                            <div class="alert-container">
+                                <?php if (isset($_SESSION['success'])) : ?>
+                                    <div class="alert alert-success" role="alert">
+                                        <?= $_SESSION['success']; ?>
+                                    </div>
+                                    <?php unset($_SESSION['success']); ?>
+                                <?php elseif (isset($_SESSION['errors'])) : ?>
+                                    <div class="alert alert-danger" role="alert">
+                                        <?= $_SESSION['errors']; ?>
+                                    </div>
+                                    <?php unset($_SESSION['errors']); ?>
+                                <?php endif; ?>
+                            </div>
+
                             <!-- END ALERTS -->
                             <form id="add_default_id_validation" method="POST" action="">
                                 <div class="form-group form-float" style="margin-top: 20px !important;">
@@ -308,6 +235,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <!-- #END# Advanced Validation -->
 
+            <div id="pleaseWaitModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.6); z-index:9999; text-align:center;">
+                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:white;">
+                    <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p style="font-size:20px; margin-top:15px;">Adding data, please wait...</p>
+                </div>
+            </div>
+
 
     </section>
 
@@ -332,6 +268,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- Jquery DataTable Plugin Js -->
     <script src="plugins/jquery-datatable/jquery.dataTables.js"></script>
     <script src="plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#add_default_id_validation').on('submit', function(e) {
+                e.preventDefault();
+
+                // Check if the form is valid
+                if (!this.checkValidity()) {
+                    this.reportValidity();
+                    return;
+                }
+
+                $('#pleaseWaitModal').show();
+
+                $.ajax({
+                    url: 'add_default_ajax.php',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        $('#pleaseWaitModal').hide();
+
+                        if (response.status === 'success') {
+                            // Redirect to add_examiners.php after success
+                            window.location.href = 'add_examiners.php';
+                        } else {
+                            // Show error alert inline
+                            $('.alert-container').html(`
+                            <div class="alert alert-danger" role="alert">
+                                ${response.message}
+                            </div>
+                        `);
+                        }
+                    },
+                    error: function() {
+                        $('#pleaseWaitModal').hide();
+                        $('.alert-container').html(`
+                        <div class="alert alert-danger" role="alert">
+                            Something went wrong. Please try again.
+                        </div>
+                    `);
+                    }
+                });
+            });
+        });
+    </script>
+
+
+
+
     <script>
         $(function() {
             $('.js-basic-example').DataTable({

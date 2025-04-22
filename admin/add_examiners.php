@@ -137,14 +137,12 @@ $examiners = $stmt_get_examiners->fetchAll(PDO::FETCH_ASSOC);
                                 <div class="alert alert-success" role="alert">
                                     <?= $_SESSION['success']; ?>
                                 </div>
-                                <?php unset($_SESSION['success']);
-                                ?>
+                                <?php unset($_SESSION['success']); ?>
                             <?php elseif (isset($_SESSION['errors'])) : ?>
                                 <div class="alert alert-danger" role="alert">
                                     <?= $_SESSION['errors']; ?>
                                 </div>
-                                <?php unset($_SESSION['errors']);
-                                ?>
+                                <?php unset($_SESSION['errors']); ?>
                             <?php endif; ?>
                             <!-- END ALERTS -->
                             <div>

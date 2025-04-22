@@ -220,3 +220,12 @@ GROUP BY
     e.id, c.course_name
 ORDER BY
     c.course_name;
+
+
+MAILER
+assistmentskll@gmail.com
+Kllassistment123
+
+SMTP password
+assistmentskll@gmail.com
+geazxbnxsqmkqkrk
