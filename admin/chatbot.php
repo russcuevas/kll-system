@@ -166,7 +166,7 @@ $chatbot = $stmt_get_chatbot->fetchAll(PDO::FETCH_ASSOC);
                                             <tr>
                                                 <td><?php echo $chatbots['sequence'] ?></td>
                                                 <td><?php echo $chatbots['chat_question'] ?></td>
-                                                <td><?php echo $chatbots['bot_response'] ?></td>
+                                                <td><?php echo nl2br($chatbots['bot_response']) ?></td>
                                                 <td><?php echo date('F j, Y - g:i A', strtotime($chatbots['created_at'])); ?></td>
                                                 <td><?php echo date('F j, Y - g:i A', strtotime($chatbots['updated_at'])); ?></td>
                                                 <td>

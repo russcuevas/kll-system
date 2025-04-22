@@ -246,7 +246,7 @@ $exam_date = $date_result['exam_date'] ? date('F d, Y h:i A', strtotime($date_re
                 </div>
             </div>
             <div class="container-box">
-                <a class="btn bg-red waves-effect me-2" style="float: right; margin-top: 30px;" href="print/exam_results.php?user_id=<?php echo $user_id; ?>" target="_blank">DOWNLOAD FOR PRINT</a>
+                <a class="btn bg-red waves-effect me-2" style="float: right; margin-top: 30px; color: white;" href="print/exam_results.php?user_id=<?php echo $user_id; ?>" target="_blank">DOWNLOAD FOR PRINT</a>
                 <h2>RESULTS</h2>
                 <!-- Display Student Information -->
                 <ul>
@@ -279,7 +279,7 @@ $exam_date = $date_result['exam_date'] ? date('F d, Y h:i A', strtotime($date_re
                 <div class="row">
                     <div class="col-md-12">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped table-hover">
+                            <table id="analyticsTable" class="table table-bordered table-striped table-hover">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -297,9 +297,7 @@ $exam_date = $date_result['exam_date'] ? date('F d, Y h:i A', strtotime($date_re
                                             <td><?php echo $index + 1; ?></td>
                                             <td><?php echo $data['question_text']; ?></td>
                                             <td><?php echo $data['related_courses']; ?></td>
-                                            <td>
-                                                <?php echo $points_display; ?>
-                                            </td>
+                                            <td><?php echo $points_display; ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -309,9 +307,7 @@ $exam_date = $date_result['exam_date'] ? date('F d, Y h:i A', strtotime($date_re
                                         <td><strong><?php echo $total_points; ?> point<?php echo $total_points > 1 ? 's' : ''; ?></strong></td>
                                     </tr>
                                 </tfoot>
-
                             </table>
-
                         </div>
                     </div>
                 </div>
@@ -416,6 +412,16 @@ $exam_date = $date_result['exam_date'] ? date('F d, Y h:i A', strtotime($date_re
     <!-- Jquery DataTable Plugin Js -->
     <script src="plugins/jquery-datatable/jquery.dataTables.js"></script>
     <script src="plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#analyticsTable').DataTable({
+                "pageLength": 10,
+                "lengthChange": true,
+                "ordering": true,
+                "searching": true
+            });
+        });
+    </script>
     <script>
         $(function() {
             $('.js-basic-example').DataTable({

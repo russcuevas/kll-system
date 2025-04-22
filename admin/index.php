@@ -489,7 +489,7 @@ foreach ($students as $student) {
                                         </select>
                                     </div>
                                 </div>
-                                <canvas id="preferred-course-chart" height="193"></canvas>
+                                <canvas id="preferred-course-chart" height="159"></canvas>
                             </form>
                         </div>
                     </div>
@@ -521,39 +521,32 @@ foreach ($students as $student) {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php if (!empty($students_data)): ?>
-                                                    <?php foreach ($students_data as $data): ?>
-                                                        <tr>
-                                                            <td><?= htmlspecialchars($data['student']['default_id']) ?></td>
-                                                            <td><?= htmlspecialchars($data['student']['fullname']) ?></td>
-                                                            <td><?= $data['analytics']['total_points'] ?? 0 ?></td> <!-- Total points -->
-                                                            <td>
-                                                                <?= !empty($data['preferred_courses']['course_1_name']) ? htmlspecialchars($data['preferred_courses']['course_1_name']) : 'N/A' ?><br>
-                                                                <?= !empty($data['preferred_courses']['course_2_name']) ? htmlspecialchars($data['preferred_courses']['course_2_name']) : 'N/A' ?><br>
-                                                                <?= !empty($data['preferred_courses']['course_3_name']) ? htmlspecialchars($data['preferred_courses']['course_3_name']) : 'N/A' ?>
-                                                            </td>
-                                                            <td>
-                                                                <?php
-                                                                // Display top 5 courses
-                                                                if (!empty($data['top_courses'])) {
-                                                                    foreach ($data['top_courses'] as $course) {
-                                                                        echo htmlspecialchars($course['course_name']) . ' (' . $course['total_points'] . ' points)<br>';
-                                                                    }
-                                                                } else {
-                                                                    echo 'No suggestions available';
-                                                                }
-                                                                ?>
-                                                            </td>
-                                                            <td><?= $data['exam_date'] ?></td>
-                                                            <td> <a href="view_results.php?user_id=<?= $data['student']['id'] ?>" class="btn btn-warning">View Results</a>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                <?php else: ?>
+                                                <?php foreach ($students_data as $data): ?>
                                                     <tr>
-                                                        <td colspan="6">No data available.</td>
+                                                        <td><?= htmlspecialchars($data['student']['default_id']) ?></td>
+                                                        <td><?= htmlspecialchars($data['student']['fullname']) ?></td>
+                                                        <td><?= $data['analytics']['total_points'] ?? 0 ?></td>
+                                                        <td>
+                                                            <?= !empty($data['preferred_courses']['course_1_name']) ? htmlspecialchars($data['preferred_courses']['course_1_name']) : 'N/A' ?><br>
+                                                            <?= !empty($data['preferred_courses']['course_2_name']) ? htmlspecialchars($data['preferred_courses']['course_2_name']) : 'N/A' ?><br>
+                                                            <?= !empty($data['preferred_courses']['course_3_name']) ? htmlspecialchars($data['preferred_courses']['course_3_name']) : 'N/A' ?>
+                                                        </td>
+                                                        <td>
+                                                            <?php
+                                                            if (!empty($data['top_courses'])) {
+                                                                foreach ($data['top_courses'] as $course) {
+                                                                    echo htmlspecialchars($course['course_name']) . ' (' . $course['total_points'] . ' points)<br>';
+                                                                }
+                                                            } else {
+                                                                echo 'No suggestions available';
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                        <td><?= $data['exam_date'] ?></td>
+                                                        <td> <a href="view_results.php?user_id=<?= $data['student']['id'] ?>" class="btn btn-warning">View Results</a>
+                                                        </td>
                                                     </tr>
-                                                <?php endif; ?>
+                                                <?php endforeach; ?>
                                             </tbody>
                                         </table>
                                     </div>

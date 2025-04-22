@@ -84,7 +84,7 @@
 
                 const botMsg = document.createElement('div');
                 botMsg.className = 'chat-message bot maintenance';
-                botMsg.innerHTML = `<strong>Bot:</strong> ⚠️ Chatbot is currently under maintenance. <br> Please try again later.`;
+                botMsg.innerHTML = `<strong>Bot 🤖:</strong> ⚠️ Chatbot is currently under maintenance. <br> Please try again later.`;
 
                 messagesContainer.appendChild(botMsg);
                 questionsContainer.innerHTML = '<div class="text-muted">🤖 Chatbot maintenance, please wait for a while!</div>';
@@ -116,7 +116,7 @@
 
             const typingIndicator = document.createElement('div');
             typingIndicator.className = 'chat-message bot';
-            typingIndicator.innerHTML = `<strong>Bot:</strong> Typing...`;
+            typingIndicator.innerHTML = `<strong>Bot 🤖:</strong> Typing...`;
             messagesContainer.appendChild(typingIndicator);
 
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -128,7 +128,7 @@
 
                 const botMsg = document.createElement('div');
                 botMsg.className = 'chat-message bot';
-                botMsg.innerHTML = `<strong>Bot:</strong> ${formattedResponse}`;
+                botMsg.innerHTML = `<strong>Bot 🤖:</strong> ${formattedResponse}`;
                 messagesContainer.appendChild(botMsg);
 
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;

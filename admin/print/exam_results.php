@@ -170,12 +170,11 @@ $exam_date = $date_result['exam_date'] ? date('F d, Y h:i A', strtotime($date_re
 <body>
     <div class="container">
         <div class="no-print">
-            <button onclick="window.print()">Print this page</button>
+            <button onclick="window.print()" style="float: right; padding: 20px; background-color: red; color: white; border: none;">PRINT THE RESULT</button>
         </div>
         <div>
             <h2>Exam Results for <?php echo $student['fullname']; ?></h2>
             <p><strong>Exam Date:</strong> <?php echo $exam_date; ?></p>
-
             <strong>Student ID:</strong> <?php echo $student['default_id']; ?><br>
             <strong>Gender:</strong> <?php echo $student['gender']; ?><br>
             <strong>Age:</strong> <?php echo $student['age']; ?><br>
