@@ -110,7 +110,7 @@ foreach ($courses_points as $course_data) {
     <link href="admin/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="admin/css/style.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-
+    <link href="assets/css/bot.css" rel="stylesheet" />
     <link rel="shortcut icon" href="assets/images/kll-logo.jpg" type="image/x-icon">
     <style>
         /* Custom Styles */
@@ -355,6 +355,7 @@ foreach ($courses_points as $course_data) {
         </div>
     </section>
 
+    <?php include 'chatbot-2.php' ?>
     <!-- Jquery Core Js -->
     <script src="admin/plugins/jquery/jquery.min.js"></script>
     <script src="admin/plugins/chartjs/Chart.bundle.js"></script>

@@ -125,6 +125,7 @@ foreach ($courses_points as $course_data) {
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="admin/css/themes/all-themes.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link href="assets/css/bot.css" rel="stylesheet" />
 
     <link rel="stylesheet" href="admin/css/custom.css">
     <!-- FAVICON -->
@@ -523,6 +524,8 @@ foreach ($courses_points as $course_data) {
             </div>
         </div>
     </section>
+
+    <?php include 'chatbot-2.php' ?>
 
     <!-- Jquery Core Js -->
     <script src="admin/plugins/jquery/jquery.min.js"></script>

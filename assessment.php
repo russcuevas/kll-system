@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if ($all_success) {
-        header('Location: generate_result.php?submitted=success');
+        header('Location: response.php?submitted=success');
         exit();
     } else {
         echo "<script>alert('Something went wrong while submitting. Please try again.');</script>";

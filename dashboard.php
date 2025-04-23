@@ -29,6 +29,8 @@ include 'session_not_login.php';
     <link href="admin/css/style.css" rel="stylesheet">
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="admin/css/themes/all-themes.css" rel="stylesheet" />
+    <link href="assets/css/bot.css" rel="stylesheet" />
+
     <link rel="stylesheet" href="admin/css/custom.css">
     <!-- FAVICON -->
     <link rel="shortcut icon" href="assets/images/kll-logo.jpg" type="image/x-icon">
@@ -199,6 +201,7 @@ include 'session_not_login.php';
 
     </section>
 
+    <?php include 'chatbot-2.php' ?>
     <!-- Jquery Core Js -->
     <script src="admin/plugins/jquery/jquery.min.js"></script>
     <!-- Jquery Validation Plugin Css -->
