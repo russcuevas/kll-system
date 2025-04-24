@@ -29,6 +29,7 @@ $images = json_decode($course['course_picture'], true);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick-theme.css" />
+    <link href="assets/css/bot.css" rel="stylesheet" />
     <style>
         .slick-slide img {
             display: block;
@@ -63,6 +64,7 @@ $images = json_decode($course['course_picture'], true);
         <p><?= nl2br(htmlspecialchars($course['course_description'] ?? 'No description available.')) ?></p>
     </div>
 
+    <?php include 'chatbot.php' ?>
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/slick-carousel/slick/slick.min.js"></script>
