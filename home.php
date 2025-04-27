@@ -181,20 +181,37 @@
                 </div>
             </div>
             <div id="course-grid" class="row d-flex justify-content-between">
-                <div class="col-md-2 ">
-                    <div class="my-3" role="group" aria-label="3 / 7" style="width: 158.667px; margin-right: 20px;"><img alt="image" src="home-assets/images/CBA.png"></div>
-                </div>
-                <div class="col-md-2">
-                    <div class="my-3" role="group" aria-label="3 / 7" style="width: 158.667px; margin-right: 20px;"><img alt="image" src="home-assets/images/CCA.png"></div>
-                </div>
-                <div class="col-md-2">
-                    <div class="my-3" role="group" aria-label="3 / 7" style="width: 158.667px; margin-right: 20px;"><img alt="image" src="home-assets/images/CCJ.png"></div>
-                </div>
-                <div class="col-md-2">
-                    <div class="my-3" role="group" aria-label="3 / 7" style="width: 158.667px; margin-right: 20px;"><img alt="image" src="home-assets/images/CCS.png"></div>
-                </div>
-                <div class="col-md-2">
-                    <div class="my-3" role="group" aria-label="3 / 7" style="width: 158.667px; margin-right: 20px;"><img alt="image" src="home-assets/images/CTE.png"></div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="my-3" role="group" aria-label="1 / 6">
+                            <img alt="image" src="home-assets/images/CBA.png" style="width: 70%;">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="my-3" role="group" aria-label="2 / 6">
+                            <img alt="image" src="home-assets/images/CCA.png" style="width: 70%;">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="my-3" role="group" aria-label="3 / 6">
+                            <img alt="image" src="home-assets/images/CCJ.png" style="width: 70%;">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="my-3" role="group" aria-label="4 / 6">
+                            <img alt="image" src="home-assets/images/CCS.png" style="width: 70%;">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="my-3" role="group" aria-label="5 / 6">
+                            <img alt="image" src="home-assets/images/CTE.png" style="width: 70%;">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="my-3" role="group" aria-label="6 / 6">
+                            <img alt="image" src="home-assets/images/bsn-course.jpg" style="width: 70%;">
+                        </div>
+                    </div>
                 </div>
 
 
